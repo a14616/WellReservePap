@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhe do Contacto - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-envelope-open-text me-2"></i>Detalhe do Contacto</h2>
+        <a href="{% url 'contactos_lista' %}" class="btn btn-outline-secondary">Voltar</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <strong>{{ contacto.assunto }}</strong>
+        </div>
+        <div class="card-body">
+            <p><strong>Nome:</strong> {{ contacto.nome }}</p>
+            <p><strong>Email:</strong> {{ contacto.email }}</p>
+            <p><strong>Telefone:</strong> {{ contacto.telefone|default:'-' }}</p>
+            <p><strong>Data:</strong> {{ contacto.data_criacao|date:'d/m/Y H:i' }}</p>
+            <hr>
+            <p class="mb-0">{{ contacto.mensagem|linebreaks }}</p>
+        </div>
+        <div class="card-footer d-flex gap-2">
+            {% if not contacto.respondida %}
+            <a href="{% url 'contacto_marcar_respondido' contacto.pk %}" class="btn btn-success"><i class="fas fa-check me-2"></i>Marcar como Respondido</a>
+            {% endif %}
+            <a href="{% url 'contacto_eliminar' contacto.pk %}" class="btn btn-outline-danger"><i class="fas fa-trash me-2"></i>Eliminar</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

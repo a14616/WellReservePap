@@ -1,0 +1,15 @@
+Olá {{ cliente.first_name }},
+
+A sua reserva foi marcada como não compareceu.
+
+DETALHES DA RESERVA:
+-------------------
+Serviço: {{ servico.nome }}
+Data: {{ data|date:"d/m/Y" }}
+Hora: {{ hora|time:"H:i" }}
+Funcionário: {{ funcionario.get_full_name|default:funcionario.username }}
+Estado: Não compareceu
+
+Se este estado foi atribuído por engano, contacte-nos através de {{ contacto_email }}.
+
+WellReserve

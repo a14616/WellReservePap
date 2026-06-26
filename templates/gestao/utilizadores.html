@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestão de Utilizadores - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-users me-2"></i>Gestão de Utilizadores</h2>
+        <a href="{% url 'utilizador_criar' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Novo Utilizador
+        </a>
+    </div>
+    
+    <!-- Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Clientes</h6>
+                            <h3 class="mb-0">{{ total_clientes }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x text-info opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Funcionários</h6>
+                            <h3 class="mb-0">{{ total_funcionarios }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-tie fa-2x text-success opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Administradores</h6>
+                            <h3 class="mb-0">{{ total_admins }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-shield fa-2x text-warning opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="q" class="form-control" placeholder="Pesquisar nome, email..." value="{{ request.GET.q }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="tipo" class="form-select">
+                        <option value="">Todos os tipos</option>
+                        <option value="admin" {% if tipo_selecionado == "admin" %}selected{% endif %}>Administradores</option>
+                        <option value="funcionario" {% if tipo_selecionado == "funcionario" %}selected{% endif %}>Funcionários</option>
+                        <option value="cliente" {% if tipo_selecionado == "cliente" %}selected{% endif %}>Clientes</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="ativo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="1" {% if ativo_selecionado == "1" %}selected{% endif %}>Ativos</option>
+                        <option value="0" {% if ativo_selecionado == "0" %}selected{% endif %}>Inativos</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Filtrar
+                    </button>
+                    <a href="{% url 'utilizadores_lista' %}" class="btn btn-outline-secondary">Limpar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Users Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Utilizador</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Tipo</th>
+                            <th>Registo</th>
+                            <th>Estado</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for utilizador in utilizadores %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if utilizador.foto %}
+                                    <img src="{{ utilizador.foto.url }}" class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
+                                    {% else %}
+                                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--primary-color); color: white;">
+                                        {{ utilizador.first_name|slice:":1" }}{{ utilizador.last_name|slice:":1" }}
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ utilizador.get_full_name }}</strong>
+                                        <br>
+                                        <small class="text-muted">@{{ utilizador.username }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ utilizador.email }}</td>
+                            <td>{{ utilizador.telefone|default:"-" }}</td>
+                            <td>
+                                {% if utilizador.tipo == 'admin' %}
+                                <span class="badge bg-danger">Administrador</span>
+                                {% elif utilizador.tipo == 'funcionario' %}
+                                <span class="badge bg-primary">Funcionário</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Cliente</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ utilizador.date_joined|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if utilizador.is_active %}
+                                <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'utilizador_detalhe' utilizador.pk %}" class="btn btn-outline-primary" title="Ver">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'utilizador_editar' utilizador.pk %}" class="btn btn-outline-secondary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% if utilizador.pk != user.pk %}
+                                    <a href="{% url 'utilizador_eliminar' utilizador.pk %}" class="btn btn-outline-danger" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                Nenhum utilizador encontrado
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if utilizadores.has_other_pages %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if utilizadores.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ utilizadores.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for num in utilizadores.paginator.page_range %}
+                {% if utilizadores.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > utilizadores.number|add:'-3' and num < utilizadores.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if utilizadores.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ utilizadores.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+<aside class="sidebar admin-sidebar rounded p-3">
+    <h6 class="text-uppercase text-light opacity-50 mb-3">
+        <small>Receção</small>
+    </h6>
+    <nav class="nav flex-column">
+        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+            <i class="fas fa-headset" style="color: white;"></i> Dashboard
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'minhas_reservas' %}active{% endif %}" href="{% url 'minhas_reservas' %}">
+            <i class="fas fa-calendar-day" style="color: white;"></i> Minhas Reservas
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'perfil' %}active{% endif %}" href="{% url 'perfil' %}">
+            <i class="fas fa-user" style="color: white;"></i> Perfil
+        </a>
+        <hr class="my-2 opacity-25">
+        <a class="nav-link {% if request.resolver_match.url_name == 'reserva_criar' %}active{% endif %}" href="{% url 'reserva_criar' %}">
+            <i class="fas fa-plus-circle" style="color: white;"></i> Nova Reserva
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'horarios_gestao' %}active{% endif %}" href="{% url 'horarios_gestao' %}">
+            <i class="fas fa-clock" style="color: white;"></i> Horários
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'reservas_lista' %}active{% endif %}" href="{% url 'reservas_lista' %}">
+            <i class="fas fa-list" style="color: white;"></i> Próximas Reservas
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'encomendas_lista' %}active{% endif %}" href="{% url 'encomendas_lista' %}">
+            <i class="fas fa-box" style="color: white;"></i> Encomendas
+        </a>
+    </nav>
+</aside>

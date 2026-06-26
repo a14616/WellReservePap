@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhe de Utilizador - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user me-2"></i>{{ utilizador.get_full_name|default:utilizador.username }}</h2>
+        <div>
+            <a href="{% url 'utilizador_editar' utilizador.pk %}" class="btn btn-primary"><i class="fas fa-edit me-2"></i>Editar</a>
+            <a href="{% url 'utilizadores_lista' %}" class="btn btn-outline-secondary">Voltar</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <p><strong>Username:</strong> {{ utilizador.username }}</p>
+                    <p><strong>Email:</strong> {{ utilizador.email }}</p>
+                    <p><strong>Tipo:</strong> {{ utilizador.get_tipo_display }}</p>
+                    <p><strong>Telefone:</strong> {{ utilizador.telefone|default:'-' }}</p>
+                    <p class="mb-0"><strong>Estado:</strong> {% if utilizador.is_active %}Ativo{% else %}Inativo{% endif %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header"><h5 class="mb-0">Reservas Recentes</h5></div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for reserva in reservas %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>{{ reserva.servico.nome }} - {{ reserva.data|date:'d/m/Y' }} {{ reserva.hora|time:'H:i' }}</span>
+                            <span class="badge badge-{{ reserva.estado }}">{{ reserva.get_estado_display }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">Sem reservas</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">Encomendas Recentes</h5></div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for encomenda in encomendas %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>#{{ encomenda.pk }} - {{ encomenda.data_criacao|date:'d/m/Y H:i' }}</span>
+                            <span class="badge badge-{{ encomenda.estado }}">{{ encomenda.get_estado_display }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">Sem encomendas</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

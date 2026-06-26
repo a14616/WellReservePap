@@ -1,0 +1,363 @@
+/* Base layout styles extracted from templates/base.html */
+:root {
+    --primary-color: #1a5f7a;
+    --secondary-color: #57c5b6;
+    --accent-color: #c9a227;
+    --dark-color: #002b5b;
+    --light-color: #f8f9fa;
+    --text-color: #333;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+}
+
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+}
+
+.navbar-brand i {
+    color: var(--accent-color);
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--secondary-color) !important;
+}
+
+.dropdown-menu {
+    border: 1px solid rgba(26, 95, 122, 0.12);
+    box-shadow: 0 12px 28px rgba(13, 43, 54, 0.14);
+}
+
+.dropdown-item {
+    color: var(--text-color);
+}
+
+.dropdown-item i {
+    color: var(--primary-color) !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background: rgba(26, 95, 122, 0.08);
+    color: var(--dark-color);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(26, 95, 122, 0.3);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: #45a89b;
+}
+
+.btn-accent {
+    background: var(--accent-color);
+    border: none;
+    color: white;
+}
+
+.btn-accent:hover {
+    background: #b08a1f;
+    color: white;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+    color: white;
+    border-bottom: 0;
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, rgba(26, 95, 122, 0.9), rgba(0, 43, 91, 0.9)),
+                url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3') center/cover;
+    min-height: clamp(320px, 70vh, 500px);
+    padding: clamp(48px, 8vw, 100px) 0;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.hero-section h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 700;
+}
+
+footer {
+    background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
+    color: white;
+    margin-top: auto;
+}
+
+footer a {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: var(--accent-color);
+}
+
+.sidebar {
+    background: linear-gradient(180deg, var(--primary-color), var(--dark-color));
+    min-height: calc(100vh - 56px);
+    color: white;
+    align-self: flex-start;
+}
+
+.admin-shell {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 24px 20px 0;
+}
+
+.admin-sidebar {
+    width: 260px;
+    position: sticky;
+    top: 96px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    z-index: 2;
+    flex: 0 0 260px;
+    margin: 0;
+}
+
+.admin-content {
+    flex: 1;
+    min-width: 0;
+    padding-top: 0;
+    margin-left: 0;
+}
+
+@media (max-width: 991.98px) {
+    .admin-shell {
+        display: block;
+        padding: 16px 12px 0;
+    }
+
+    .admin-sidebar {
+        position: static;
+        width: 100%;
+        flex: none;
+        max-height: none;
+        margin: 0 0 20px;
+    }
+
+    .admin-content {
+        margin-left: 0;
+        padding-top: 0;
+    }
+}
+
+.dashboard-sidebar {
+    position: sticky;
+    top: 96px;
+    align-self: flex-start;
+}
+
+@media (max-width: 991.98px) {
+    .dashboard-sidebar {
+        position: static;
+        top: auto;
+        align-self: stretch;
+    }
+}
+
+.sidebar .nav-link {
+    color: rgba(255,255,255,0.8);
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin: 2px 10px;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.sidebar .nav-link i {
+    width: 25px;
+}
+
+.auth-contrast,
+.reservation-contrast {
+    background: linear-gradient(180deg, var(--primary-color), var(--dark-color));
+    color: white;
+}
+
+.auth-contrast .card-header,
+.reservation-contrast .card-header {
+    background: transparent;
+    color: white;
+}
+
+.auth-contrast .card-body,
+.reservation-contrast .card-body {
+    color: white;
+}
+
+.auth-contrast .form-label,
+.reservation-contrast .form-label,
+.auth-contrast .form-text,
+.reservation-contrast .form-text,
+.auth-contrast small,
+.reservation-contrast small,
+.auth-contrast p,
+.reservation-contrast p,
+.auth-contrast li,
+.reservation-contrast li {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.auth-contrast .form-control,
+.auth-contrast .form-select,
+.reservation-contrast .form-control,
+.reservation-contrast .form-select,
+.auth-contrast textarea,
+.reservation-contrast textarea {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+}
+
+.auth-contrast .form-control::placeholder,
+.reservation-contrast .form-control::placeholder,
+.auth-contrast textarea::placeholder,
+.reservation-contrast textarea::placeholder {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.auth-contrast .form-control:focus,
+.auth-contrast .form-select:focus,
+.auth-contrast textarea:focus,
+.reservation-contrast .form-control:focus,
+.reservation-contrast .form-select:focus,
+.reservation-contrast textarea:focus {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.12);
+}
+
+.auth-contrast .input-group-text,
+.reservation-contrast .input-group-text {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.alert {
+    border: none;
+    border-radius: 10px;
+}
+
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+    color: white;
+}
+
+.badge-pendente { background-color: #ffc107; color: #000; }
+.badge-confirmada { background-color: #17a2b8; color: #fff; }
+.badge-cancelada { background-color: #dc3545; color: #fff; }
+.badge-concluida { background-color: #28a745; color: #fff; }
+.badge-nao_compareceu { background-color: #6c757d; color: #fff; }
+
+.service-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card img {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover img {
+    transform: scale(1.1);
+}
+
+.service-price {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--accent-color);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.product-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(26, 95, 122, 0.25);
+}
+
+.stat-card {
+    border-left: 4px solid var(--primary-color);
+}
+
+.stat-card.success { border-left-color: #28a745; }
+.stat-card.warning { border-left-color: #ffc107; }
+.stat-card.danger { border-left-color: #dc3545; }
+.stat-card.info { border-left-color: #17a2b8; }
+

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Encomenda #{{ encomenda.pk }} - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-box me-2"></i>Encomenda #{{ encomenda.pk }}</h2>
+        <div class="d-flex gap-2">
+            <a href="{% url 'encomenda_fatura' encomenda.pk %}" class="btn btn-outline-primary">
+                <i class="fas fa-file-invoice me-2"></i>Ver Fatura
+            </a>
+            <a href="{% url 'encomendas_lista' %}" class="btn btn-outline-secondary">Voltar</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Cliente:</strong> {{ encomenda.cliente.get_full_name }}</p>
+            <p><strong>Estado:</strong> {{ encomenda.get_estado_display }}</p>
+            <p><strong>Data:</strong> {{ encomenda.data_criacao|date:'d/m/Y H:i' }}</p>
+            <p><strong>Fatura:</strong> {{ encomenda.numero_fatura|default:'- ' }}</p>
+            <p><strong>Estado de Pagamento:</strong> {{ encomenda.get_estado_pagamento_display }}</p>
+            <p><strong>Método de Pagamento:</strong> {{ encomenda.get_metodo_pagamento_display }}</p>
+            <p><strong>Referência de Pagamento:</strong> {{ encomenda.referencia_pagamento|default:'- ' }}</p>
+            <p><strong>Data de Pagamento:</strong> {{ encomenda.data_pagamento|date:'d/m/Y H:i'|default:'- ' }}</p>
+            <p><strong>Nome de Faturação:</strong> {{ encomenda.faturacao_nome|default:'- ' }}</p>
+            <p><strong>Email de Faturação:</strong> {{ encomenda.faturacao_email|default:'- ' }}</p>
+            <p><strong>NIF:</strong> {{ encomenda.faturacao_nif|default:'- ' }}</p>
+            <p><strong>Morada de Faturação:</strong><br>{{ encomenda.faturacao_morada|linebreaksbr|default:'- ' }}</p>
+            <p><strong>Morada de Entrega:</strong><br>{{ encomenda.entrega_morada|linebreaksbr|default:'- ' }}</p>
+            <p class="mb-0"><strong>Total:</strong> {{ encomenda.total }} EUR</p>
+        </div>
+    </div>
+
+    {% if user.is_admin or user.is_funcionario or user.is_recepcao %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Atualizar Estado</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'encomenda_atualizar_estado' encomenda.pk %}" class="row g-3 align-items-end">
+                {% csrf_token %}
+                <div class="col-md-8">
+                    <label class="form-label">Estado</label>
+                    <select name="estado" class="form-select">
+                        {% for value,label in estado_choices %}
+                        <option value="{{ value }}" {% if encomenda.estado == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save me-2"></i>Guardar Estado
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header"><h5 class="mb-0">Itens</h5></div>
+        <div class="card-body p-0">
+            <table class="table mb-0">
+                <thead><tr><th>Produto</th><th>Qtd</th><th>Preço</th><th>Subtotal</th></tr></thead>
+                <tbody>
+                    {% for item in encomenda.itens.all %}
+                    <tr>
+                        <td>{{ item.produto.nome }}</td>
+                        <td>{{ item.quantidade }}</td>
+                        <td>{{ item.preco_unitario }} EUR</td>
+                        <td>{{ item.subtotal }} EUR</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center py-3 text-muted">Sem itens</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

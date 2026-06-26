@@ -1,0 +1,22 @@
+Olá {{ cliente.first_name }},
+
+A sua encomenda foi confirmada com sucesso.
+
+DETALHES DA ENCOMENDA:
+----------------------
+Número da Encomenda: #{{ encomenda.pk }}
+Fatura: {{ encomenda.numero_fatura }}
+Estado do Pagamento: {{ encomenda.get_estado_pagamento_display }}
+Método de Pagamento: {{ encomenda.get_metodo_pagamento_display }}
+Morada de Entrega: {{ encomenda.entrega_morada }}
+
+ITENS:
+------
+{% for item in itens %}{{ item.quantidade }}x {{ item.produto.nome }} - {{ item.subtotal }} EUR
+{% endfor %}
+
+Total: {{ encomenda.total }} EUR
+
+Se tiver dúvidas, contacte-nos através de {{ contacto_email }}.
+
+WellReserve

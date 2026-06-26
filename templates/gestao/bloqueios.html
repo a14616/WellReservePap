@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Bloqueios - Gestão{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h3>Bloqueios de Horários</h3>
+    <a href="{% url 'bloqueio_criar' %}" class="btn btn-primary btn-sm mb-3">Novo Bloqueio</a>
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr><th>Serviço</th><th>Funcionário</th><th>Data</th><th>Início</th><th>Fim</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for b in bloqueios %}
+                    <tr>
+                        <td>{{ b.servico.nome if b.servico else '-' }}</td>
+                        <td>{{ b.funcionario.get_full_name if b.funcionario else '-' }}</td>
+                        <td>{{ b.data }}</td>
+                        <td>{{ b.hora_inicio }}</td>
+                        <td>{{ b.hora_fim }}</td>
+                        <td>
+                            <form method="post" action="{% url 'bloqueio_eliminar' b.pk %}" onsubmit="return confirm('Remover bloqueio?');">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-outline-danger">Remover</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center">Nenhum bloqueio</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ servico.nome }} - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Início</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'servicos_lista' %}">Serviços</a></li>
+            {% if servico.categoria %}
+            <li class="breadcrumb-item"><a href="{% url 'servicos_lista' %}?categoria={{ servico.categoria.pk }}">{{ servico.categoria.nome }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active">{{ servico.nome }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <!-- Service Image -->
+        <div class="col-lg-6 mb-4">
+            <div class="position-relative">
+                <img src="{{ servico.imagem_capa }}" class="img-fluid rounded shadow" alt="{{ servico.nome }}">
+                {% if servico.destaque %}
+                <span class="position-absolute top-0 start-0 m-3 badge bg-warning">
+                    <i class="fas fa-star me-1"></i>Destaque
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Service Details -->
+        <div class="col-lg-6">
+            {% if servico.categoria %}
+            <span class="badge bg-secondary mb-2">{{ servico.categoria.nome }}</span>
+            {% endif %}
+            
+            <h1 class="mb-3">{{ servico.nome }}</h1>
+            
+            <div class="d-flex align-items-center gap-4 mb-4">
+                <div>
+                    <span class="h2 mb-0" style="color: var(--accent-color);">{{ servico.preco }}€</span>
+                </div>
+                <div class="text-muted">
+                    <i class="fas fa-clock me-1"></i>{{ servico.duracao_formatada }}
+                </div>
+                {% if servico.capacidade_maxima > 1 %}
+                <div class="text-muted">
+                    <i class="fas fa-users me-1"></i>Até {{ servico.capacidade_maxima }} pessoas
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if servico.requer_prescricao %}
+            <div class="alert alert-warning">
+                <i class="fas fa-file-medical me-2"></i>
+                <strong>Atenção:</strong> Este serviço requer validação prévia.
+            </div>
+            {% endif %}
+            
+            <div class="mb-4">
+                <h5>Descrição</h5>
+                <p class="text-muted">{{ servico.descricao|linebreaks }}</p>
+            </div>
+            
+            {% if servico.funcionarios.exists %}
+            <div class="mb-4">
+                <h5>Profissionais</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for funcionario in servico.funcionarios.all %}
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-user-md me-1"></i>{{ funcionario.get_full_name }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="d-grid gap-2 d-md-flex">
+                {% if user.is_authenticated %}
+                <a href="{% url 'reserva_criar' %}?servico={{ servico.pk }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-calendar-plus me-2"></i>Reservar Agora
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}?next={% url 'reserva_criar' %}?servico={{ servico.pk }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-calendar-plus me-2"></i>Reservar Agora
+                </a>
+                {% endif %}
+                <a href="{% url 'contacto' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-question-circle me-2"></i>Dúvidas?
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if servico.galeria_imagens %}
+    <div class="mt-5">
+        <h3 class="mb-4">Galeria</h3>
+        <div class="row g-3">
+            {% for imagem in servico.galeria_imagens %}
+            <div class="col-md-4">
+                <img src="{{ imagem }}" class="img-fluid rounded shadow-sm" alt="{{ servico.nome }}" style="height: 220px; width: 100%; object-fit: cover;">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Related Services -->
+    {% if servicos_relacionados %}
+    <div class="mt-5">
+        <h3 class="mb-4">Serviços Relacionados</h3>
+        <div class="row g-4">
+            {% for servico_rel in servicos_relacionados %}
+            <div class="col-md-6 col-lg-3">
+                <div class="card service-card h-100">
+                    <img src="{{ servico_rel.imagem_capa }}" class="card-img-top" alt="{{ servico_rel.nome }}" style="height: 150px; object-fit: cover;">
+                    <span class="service-price">{{ servico_rel.preco }}€</span>
+                    <div class="card-body">
+                        <h6 class="card-title">{{ servico_rel.nome }}</h6>
+                        <p class="card-text text-muted small">{{ servico_rel.descricao|truncatewords:10 }}</p>
+                        <a href="{% url 'servico_detalhe' servico_rel.pk %}" class="btn btn-sm btn-outline-primary">
+                            Ver Detalhes
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+Bem-vindo(a) a WellReserve!
+
+Olá {{ usuario.first_name }},
+
+A sua conta foi criada com sucesso!
+
+DETALHES DA CONTA:
+-------------------
+Nome: {{ usuario.get_full_name }}
+Email: {{ usuario.email }}
+Tipo de Utilizador: {{ tipo_utilizador_display }}
+
+PRÓXIMOS PASSOS:
+- Aceda ao seu perfil para completar as informações pessoais
+- Explore os nossos serviços disponíveis
+- Faça a sua primeira reserva
+- Se tiver dúvidas, contacte-nos
+
+INFORMAÇÕES DE CONTACTO:
+{{ contacto_email }}
+
+Obrigado por se registar!
+
+WellReserve

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Finalizar Encomenda - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"><i class="fas fa-receipt me-2"></i>Finalizar Encomenda</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Dados de Faturação</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            Verifique os campos destacados antes de continuar.
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.faturacao_nome.label }}</label>
+                            {{ form.faturacao_nome }}
+                            {{ form.faturacao_nome.errors }}
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.faturacao_email.label }}</label>
+                                {{ form.faturacao_email }}
+                                {{ form.faturacao_email.errors }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.faturacao_nif.label }}</label>
+                                {{ form.faturacao_nif }}
+                                {{ form.faturacao_nif.errors }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.faturacao_morada.label }}</label>
+                            {{ form.faturacao_morada }}
+                            {{ form.faturacao_morada.errors }}
+                        </div>
+                        <div class="form-check mb-3">
+                            {{ form.entrega_morada_igual_faturacao }}
+                            <label class="form-check-label" for="{{ form.entrega_morada_igual_faturacao.id_for_label }}">
+                                {{ form.entrega_morada_igual_faturacao.label }}
+                            </label>
+                            {{ form.entrega_morada_igual_faturacao.errors }}
+                        </div>
+                        <div class="alert alert-light border small mb-3 d-none" id="entrega-morada-summary"></div>
+                        <div class="mb-3 checkout-delivery-group" id="entrega-morada-group">
+                            <label class="form-label">{{ form.entrega_morada.label }}</label>
+                            {{ form.entrega_morada }}
+                            {{ form.entrega_morada.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Pagamento</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.metodo_pagamento.label }}</label>
+                            {{ form.metodo_pagamento }}
+                            {{ form.metodo_pagamento.errors }}
+                        </div>
+                        <div class="alert alert-info mb-0 small">
+                            O pagamento simulado marca a encomenda como paga de imediato, deixando o fluxo pronto para uma integração real mais tarde.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card mb-4">
+                    <div class="card-header"><h5 class="mb-0">Resumo da Encomenda</h5></div>
+                    <div class="card-body">
+                        <div class="table-responsive mb-3">
+                            <table class="table align-middle">
+                                <thead><tr><th>Produto</th><th>Qtd</th><th>Subtotal</th></tr></thead>
+                                <tbody>
+                                {% for item in itens %}
+                                <tr>
+                                    <td>{{ item.produto.nome }}</td>
+                                    <td>{{ item.quantidade }}</td>
+                                    <td>{{ item.subtotal }} EUR</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.notas.label }}</label>
+                            {{ form.notas }}
+                            {{ form.notas.errors }}
+                        </div>
+                        <h5 class="mb-3">Total: {{ total }} EUR</h5>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">
+                            <i class="fas fa-check me-2"></i>Confirmar Encomenda
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

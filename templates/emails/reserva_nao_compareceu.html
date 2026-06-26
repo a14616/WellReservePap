@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #6c757d; color: white; padding: 30px; border-radius: 5px 5px 0 0; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 5px 5px; }
+        .info-box { background: white; padding: 20px; border-left: 4px solid #6c757d; margin: 20px 0; }
+        .info-row { margin: 10px 0; }
+        .label { font-weight: bold; color: #2c3e50; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Reserva - Não Compareceu</h1>
+        </div>
+        <div class="content">
+            <p>Olá <strong>{{ cliente.first_name }}</strong>,</p>
+
+            <p>A sua reserva foi marcada como <strong>não compareceu</strong>.</p>
+
+            <div class="info-box">
+                <h3 style="margin-top: 0; color: #6c757d;">Detalhes da Reserva</h3>
+                <div class="info-row"><span class="label">Serviço:</span> {{ servico.nome }}</div>
+                <div class="info-row"><span class="label">Data:</span> {{ data|date:"d/m/Y" }}</div>
+                <div class="info-row"><span class="label">Hora:</span> {{ hora|time:"H:i" }}</div>
+                <div class="info-row"><span class="label">Funcionário:</span> {{ funcionario.get_full_name|default:funcionario.username }}</div>
+            </div>
+
+            <p style="color: #666;">Se este estado foi atribuído por engano, contacte-nos por {{ contacto_email }}.</p>
+        </div>
+        <div class="footer">
+            <p><strong>WellReserve</strong></p>
+            <p>{{ contacto_email }}</p>
+        </div>
+    </div>
+</body>
+</html>

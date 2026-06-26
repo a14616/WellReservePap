@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestão de Produtos - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-shopping-bag me-2"></i>Gestão de Produtos</h2>
+        <a href="{% url 'produto_criar' %}" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Novo Produto</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="q" class="form-control" placeholder="Pesquisar..." value="{{ request.GET.q }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="categoria" class="form-select">
+                        <option value="">Todas as categorias</option>
+                        {% for cat in categorias %}
+                        <option value="{{ cat.pk }}" {% if request.GET.categoria == cat.pk|stringformat:'i' %}selected{% endif %}>{{ cat.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="ativo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="1" {% if request.GET.ativo == '1' %}selected{% endif %}>Ativos</option>
+                        <option value="0" {% if request.GET.ativo == '0' %}selected{% endif %}>Inativos</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary" type="submit"><i class="fas fa-search me-2"></i>Filtrar</button>
+                    <a href="{% url 'produtos_gestao' %}" class="btn btn-outline-secondary">Limpar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in produtos %}
+                        <tr>
+                            <td>
+                                <strong>{{ produto.nome }}</strong>
+                                {% if produto.destaque %}<span class="badge bg-warning ms-1">Destaque</span>{% endif %}
+                                <br>
+                                <small class="text-muted">{{ produto.descricao|truncatewords:10 }}</small>
+                            </td>
+                            <td>{{ produto.categoria.nome|default:'-' }}</td>
+                            <td>{{ produto.preco }} EUR</td>
+                            <td>{{ produto.stock }}</td>
+                            <td>
+                                {% if produto.ativo %}
+                                <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'produto_detalhe' produto.pk %}" class="btn btn-outline-primary"><i class="fas fa-eye"></i></a>
+                                    <a href="{% url 'produto_editar' produto.pk %}" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
+                                    <a href="{% url 'produto_eliminar' produto.pk %}" class="btn btn-outline-danger"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="text-center py-4 text-muted">Nenhum produto encontrado</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

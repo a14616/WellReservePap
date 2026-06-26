@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Minha Conta - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 dashboard-title-row">
+        <h2><i class="fas fa-user-circle me-2"></i>Olá, {{ user.first_name }}!</h2>
+        <a href="{% url 'reserva_criar' %}" class="btn btn-primary">
+            <i class="fas fa-calendar-plus me-2"></i>Nova Reserva
+        </a>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Upcoming Reservations -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Próximas Reservas</h5>
+                    <a href="{% url 'reservas_lista' %}" class="btn btn-sm btn-outline-light">Ver Todas</a>
+                </div>
+                <div class="card-body">
+                    {% if proximas_reservas %}
+                    <div class="row g-3">
+                        {% for reserva in proximas_reservas %}
+                        <div class="col-md-6">
+                            <div class="card h-100 border-start border-4 border-primary mobile-surface">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title mb-0">{{ reserva.servico.nome }}</h6>
+                                        <span class="badge badge-{{ reserva.estado }}">
+                                            {{ reserva.get_estado_display }}
+                                        </span>
+                                    </div>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-calendar me-2"></i>{{ reserva.data|date:"d/m/Y" }}
+                                        <br>
+                                        <i class="fas fa-clock me-2"></i>{{ reserva.hora|time:"H:i" }} ({{ reserva.servico.duracao_formatada }})
+                                    </p>
+                                    {% if reserva.funcionario %}
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-user-md me-2"></i>{{ reserva.funcionario.get_full_name }}
+                                    </p>
+                                    {% endif %}
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'reserva_detalhe' reserva.pk %}" class="btn btn-sm btn-outline-primary">
+                                            Ver Detalhes
+                                        </a>
+                                        {% if reserva.pode_cancelar %}
+                                        <a href="{% url 'reserva_cancelar' reserva.pk %}" class="btn btn-sm btn-outline-danger">
+                                            Cancelar
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-3x mb-3 text-muted"></i>
+                        <p class="text-muted mb-3">Não tem reservas futuras</p>
+                        <a href="{% url 'reserva_criar' %}" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus me-2"></i>Fazer Reserva
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Reservation History -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Histórico de Reservas</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Serviço</th>
+                                    <th>Estado</th>
+                                    <th>Preço</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reserva in minhas_reservas %}
+                                <tr>
+                                    <td>
+                                        {{ reserva.data|date:"d/m/Y" }}
+                                        <br>
+                                        <small class="text-muted">{{ reserva.hora|time:"H:i" }}</small>
+                                    </td>
+                                    <td>{{ reserva.servico.nome }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ reserva.estado }}">
+                                            {{ reserva.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ reserva.preco_final }}€</td>
+                                    <td>
+                                        <a href="{% url 'reserva_detalhe' reserva.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        Nenhuma reserva encontrada
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4 dashboard-sidebar">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Resumo</h5>
+                    <span class="badge bg-light text-dark">Cliente</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 text-center">
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-light">
+                                <div class="h5 mb-1">{{ total_reservas }}</div>
+                                <small class="text-muted">Reservas</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-light">
+                                <div class="h5 mb-1">{{ reservas_futuras }}</div>
+                                <small class="text-muted">Futuras</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 rounded-3 bg-light">
+                                <div class="h5 mb-1">{{ total_encomendas }}</div>
+                                <small class="text-muted">Encomendas</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Ações</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'reserva_criar' %}" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus me-2"></i>Nova Reserva
+                        </a>
+                        <a href="{% url 'minhas_reservas' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-check me-2"></i>As Minhas Reservas
+                        </a>
+                        <a href="{% url 'encomendas_lista' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-box me-2"></i>As Minhas Encomendas
+                        </a>
+                        <a href="{% url 'servicos_lista' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-layer-group me-2"></i>Ver Serviços
+                        </a>
+                        <a href="{% url 'produtos_lista' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-shopping-bag me-2"></i>Ver Produtos
+                        </a>
+                        <a href="{% url 'perfil' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-box me-2"></i>Minhas Encomendas</h5>
+                    <a href="{% url 'encomendas_lista' %}" class="btn btn-sm btn-outline-light">Ver Todas</a>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for encomenda in minhas_encomendas %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Encomenda #{{ encomenda.pk }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ encomenda.data_criacao|date:"d/m/Y" }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge badge-{{ encomenda.estado }}">
+                                        {{ encomenda.get_estado_display }}
+                                    </span>
+                                    <br>
+                                    <strong>{{ encomenda.total }}€</strong>
+                                </div>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-center text-muted py-3">
+                            Nenhuma encomenda
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            {% if servicos_destaque %}
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-star me-2"></i>Serviços em Destaque</h5>
+                    <a href="{% url 'servicos_lista' %}" class="btn btn-sm btn-outline-light">Explorar</a>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for servico in servicos_destaque %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ servico.nome }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ servico.duracao_formatada }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="h6 mb-0" style="color: var(--accent-color);">{{ servico.preco }}€</span>
+                                    <br>
+                                    <a href="{% url 'reserva_criar' %}?servico={{ servico.pk }}" class="btn btn-sm btn-primary mt-1">
+                                        Reservar
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

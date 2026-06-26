@@ -1,0 +1,16 @@
+Olá {{ cliente.first_name }},
+
+A sua reserva foi marcada como concluída.
+
+DETALHES DA RESERVA:
+-------------------
+Serviço: {{ servico.nome }}
+Data: {{ data|date:"d/m/Y" }}
+Hora: {{ hora|time:"H:i" }}
+Funcionário: {{ funcionario.get_full_name|default:funcionario.username }}
+Estado: Concluída
+
+Obrigado por utilizar os nossos serviços.
+
+WellReserve
+{{ contacto_email }}

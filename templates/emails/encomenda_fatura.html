@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; color: #1f2937; margin: 0; background: #f3f4f6; }
+        .page { max-width: 760px; margin: 0 auto; padding: 24px; }
+        .sheet { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1a5f7a, #2d8aab); color: white; padding: 28px 32px; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .header p { margin: 8px 0 0; opacity: 0.9; }
+        .body { padding: 32px; }
+        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 24px; }
+        .box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
+        .label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; margin-bottom: 6px; }
+        .value { font-size: 15px; color: #111827; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { border-bottom: 1px solid #e5e7eb; padding: 12px 10px; text-align: left; vertical-align: top; }
+        th { background: #f9fafb; font-size: 13px; color: #374151; }
+        .totals { margin-top: 18px; display: flex; justify-content: flex-end; }
+        .totals-box { min-width: 280px; }
+        .totals-row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .totals-row.total { border-top: 2px solid #d1d5db; margin-top: 8px; padding-top: 12px; font-weight: bold; font-size: 18px; }
+        .footer { padding: 18px 32px 28px; color: #6b7280; font-size: 12px; }
+        .muted { color: #6b7280; }
+        .right { text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="sheet">
+            <div class="header">
+                <h1>Fatura da Encomenda</h1>
+                <p>Documento associado à encomenda #{{ encomenda.pk }}</p>
+            </div>
+            <div class="body">
+                <div class="grid">
+                    <div class="box">
+                        <span class="label">Fatura</span>
+                        <div class="value">{{ encomenda.numero_fatura }}</div>
+                    </div>
+                    <div class="box">
+                        <span class="label">Data</span>
+                        <div class="value">{{ data_fatura|date:'d/m/Y H:i' }}</div>
+                    </div>
+                    <div class="box">
+                        <span class="label">Cliente</span>
+                        <div class="value">{{ cliente.get_full_name|default:cliente.username }}</div>
+                    </div>
+                    <div class="box">
+                        <span class="label">Email de Faturação</span>
+                        <div class="value">{{ encomenda.faturacao_email }}</div>
+                    </div>
+                    <div class="box">
+                        <span class="label">NIF</span>
+                        <div class="value">{{ encomenda.faturacao_nif|default:'-' }}</div>
+                    </div>
+                    <div class="box">
+                        <span class="label">Morada de Faturação</span>
+                        <div class="value">{{ encomenda.faturacao_morada|linebreaksbr|default:'-' }}</div>
+                    </div>
+                    <div class="box">
+                        <span class="label">Estado do Pagamento</span>
+                        <div class="value">{{ encomenda.get_estado_pagamento_display }}</div>
+                    </div>
+                    <div class="box">
+                        <span class="label">Método de Pagamento</span>
+                        <div class="value">{{ encomenda.get_metodo_pagamento_display }}</div>
+                    </div>
+                </div>
+
+                <div class="box" style="padding: 0; overflow: hidden;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th class="right">Qtd</th>
+                                <th class="right">Preço Unitário</th>
+                                <th class="right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in itens %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.produto.nome }}</strong>
+                                    {% if item.produto.descricao %}
+                                    <div class="muted">{{ item.produto.descricao|truncatechars:90 }}</div>
+                                    {% endif %}
+                                </td>
+                                <td class="right">{{ item.quantidade }}</td>
+                                <td class="right">{{ item.preco_unitario }} EUR</td>
+                                <td class="right">{{ item.subtotal }} EUR</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="totals">
+                    <div class="totals-box">
+                        <div class="totals-row">
+                            <span>Subtotal</span>
+                            <span>{{ encomenda.total }} EUR</span>
+                        </div>
+                        <div class="totals-row total">
+                            <span>Total</span>
+                            <span>{{ encomenda.total }} EUR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <p><strong>WellReserve</strong></p>
+                <p>Se tiver dúvidas, contacte-nos através de {{ contacto_email }}.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

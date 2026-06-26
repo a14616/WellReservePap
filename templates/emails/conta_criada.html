@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #27ae60; color: white; padding: 30px; border-radius: 5px 5px 0 0; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 5px 5px; }
+        .info-box { background: white; padding: 20px; border-left: 4px solid #27ae60; margin: 20px 0; }
+        .info-row { margin: 10px 0; }
+        .label { font-weight: bold; color: #2c3e50; }
+        .steps { background: white; padding: 20px; border-left: 4px solid #3498db; margin: 20px 0; }
+        .steps ol { margin: 10px 0; }
+        .steps li { margin: 8px 0; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .cta-button { display: inline-block; margin-top: 20px; padding: 12px 30px; background-color: #27ae60; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Bem-vindo(a) a WellReserve!</h1>
+        </div>
+        <div class="content">
+            <p>Olá <strong>{{ usuario.first_name }}</strong>,</p>
+            
+            <p>A sua conta foi criada com sucesso! Estamos felizes em tê-lo(a) connosco.</p>
+            
+            <div class="info-box">
+                <h3 style="margin-top: 0; color: #27ae60;">Detalhes da Sua Conta</h3>
+                <div class="info-row">
+                    <span class="label">Nome:</span> {{ usuario.get_full_name }}
+                </div>
+                <div class="info-row">
+                    <span class="label">Email:</span> {{ usuario.email }}
+                </div>
+                <div class="info-row">
+                    <span class="label">Tipo de Utilizador:</span> {{ tipo_utilizador_display }}
+                </div>
+            </div>
+            
+            <div class="steps">
+                <h3 style="margin-top: 0; color: #3498db;">Próximos Passos:</h3>
+                <ol>
+                    <li><strong>Aceda ao seu perfil</strong> para completar as informações pessoais</li>
+                    <li><strong>Explore os nossos serviços</strong> disponíveis</li>
+                    <li><strong>Faça a sua primeira reserva</strong> e aproveite os nossos serviços</li>
+                    <li><strong>Contacte-nos</strong> se tiver dúvidas ou sugestões</li>
+                </ol>
+            </div>
+            
+            <p style="color: #666;">
+                Se não criou esta conta, por favor ignore este email. 
+                Se suspeitar de atividade fraudulenta, contacte-nos imediatamente.
+            </p>
+        </div>
+        <div class="footer">
+            <p><strong>WellReserve</strong></p>
+            <p>{{ contacto_email }}</p>
+            <p style="margin-top: 20px; color: #999;">Este é um email automático. Por favor, não responda diretamente.</p>
+        </div>
+    </div>
+</body>
+</html>

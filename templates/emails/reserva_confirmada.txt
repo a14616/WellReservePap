@@ -1,0 +1,21 @@
+Olá {{ cliente.first_name }},
+
+A sua reserva foi confirmada com sucesso!
+
+DETALHES DA RESERVA:
+-------------------
+Serviço: {{ servico.nome }}
+Data: {{ data|date:"d/m/Y" }}
+Hora: {{ hora|time:"H:i" }}
+Funcionário: {{ funcionario.get_full_name }}
+Estado: Confirmada
+
+INFORMAÇÕES IMPORTANTES:
+- Por favor, chegue 10 minutos antes da hora marcada
+- Se precisar cancelar, contacte-nos com pelo menos 24 horas de antecedência
+- Para dúvidas, responda a este email
+
+Obrigado por escolher os nossos serviços!
+
+WellReserve
+{{ contacto_email }}

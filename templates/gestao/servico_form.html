@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if servico %}Editar{% else %}Novo{% endif %} Serviço - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-{% if servico %}edit{% else %}plus{% endif %} me-2"></i>
+                        {% if servico %}Editar Serviço{% else %}Novo Serviço{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="id_nome" class="form-label">Nome *</label>
+                                {{ form.nome }}
+                                {% if form.nome.errors %}<div class="text-danger small mt-1">{{ form.nome.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_categoria" class="form-label">Categoria</label>
+                                {{ form.categoria }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_descricao" class="form-label">Descrição *</label>
+                            {{ form.descricao }}
+                            {% if form.descricao.errors %}<div class="text-danger small mt-1">{{ form.descricao.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="id_duracao" class="form-label">Duração (minutos) *</label>
+                                {{ form.duracao }}
+                                {% if form.duracao.errors %}<div class="text-danger small mt-1">{{ form.duracao.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_preco" class="form-label">Preço (€) *</label>
+                                {{ form.preco }}
+                                {% if form.preco.errors %}<div class="text-danger small mt-1">{{ form.preco.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_capacidade_maxima" class="form-label">Capacidade Máxima</label>
+                                {{ form.capacidade_maxima }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_funcionarios" class="form-label">Funcionários</label>
+                            {{ form.funcionarios }}
+                            <small class="text-muted">Selecione os funcionários que podem realizar este serviço</small>
+                        </div>
+
+                        <div class="mb-3 border rounded p-3">
+                            <div class="form-check mb-2">
+                                {{ form.criar_horario_fixo }}
+                                <label class="form-check-label" for="id_criar_horario_fixo">Criar horário fixo para este serviço</label>
+                                <div class="form-text">Ative para configurar um ou mais horários recorrentes. Pode remover linhas individuais sem apagar o serviço.</div>
+                            </div>
+
+                            <div id="horariosContainer" style="display: none;">
+                                <div id="horarioRows">
+                                    {% for h in horarios_existentes %}
+                                    <div class="row g-2 align-items-end mb-2 horario-row">
+                                        <input type="hidden" name="horario_id" value="{{ h.id }}">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Profissional</label>
+                                            <select name="horario_funcionario" class="form-select">
+                                                <option value="">-- Selecionar --</option>
+                                                {% for u in form.horario_funcionario.field.queryset %}
+                                                <option value="{{ u.pk }}" {% if u.pk == h.funcionario_id %}selected{% endif %}>{{ u.get_full_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Dia</label>
+                                            <select name="horario_dia_semana" class="form-select">
+                                                {% for val,label in form.horario_dia_semana.field.choices %}
+                                                <option value="{{ val }}" {% if val|stringformat:'s' == h.dia_semana|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Início</label>
+                                            <input type="time" name="horario_hora_inicio" class="form-control" value="{{ h.hora_inicio }}" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Fim</label>
+                                            <input type="time" name="horario_hora_fim" class="form-control" value="{{ h.hora_fim }}" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Data Início</label>
+                                            <input type="date" name="horario_data_inicio" class="form-control" value="{{ h.data_inicio }}" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Data Fim</label>
+                                            <input type="date" name="horario_data_fim" class="form-control" value="{{ h.data_fim }}" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-outline-danger btn-sm w-100 remover-horario">Remover</button>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <button type="button" id="adicionarHorario" class="btn btn-sm btn-outline-primary mt-2">Adicionar Horário</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_imagem" class="form-label">Imagem</label>
+                            {% if servico and servico.imagem %}
+                            <div class="mb-2">
+                                <img src="{{ servico.imagem.url }}" class="img-thumbnail" width="150">
+                            </div>
+                            {% endif %}
+                            {{ form.imagem }}
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.ativo }}
+                                    <label class="form-check-label" for="id_ativo">Ativo</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.destaque }}
+                                    <label class="form-check-label" for="id_destaque">Destaque</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.requer_prescricao }}
+                                    <label class="form-check-label" for="id_requer_prescricao">Requer Validação</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    {{ form.is_aula }}
+                                    <label class="form-check-label" for="id_is_aula">Aula</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Guardar
+                            </button>
+                            <a href="{% url 'servicos_gestao' %}" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('id_criar_horario_fixo');
+    const container = document.getElementById('horariosContainer');
+    const adicionarBtn = document.getElementById('adicionarHorario');
+    const rows = document.getElementById('horarioRows');
+
+    function toggleContainer() {
+        if (checkbox && checkbox.checked) {
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    function bindRemoveButtons(scope) {
+        scope.querySelectorAll('.remover-horario').forEach((button) => {
+            button.addEventListener('click', () => button.closest('.horario-row').remove());
+        });
+    }
+
+    function createRow() {
+        const div = document.createElement('div');
+        div.className = 'row g-2 align-items-end mb-2 horario-row';
+        div.innerHTML = `
+            <input type="hidden" name="horario_id" value="">
+            <div class="col-md-4">
+                <label class="form-label">Profissional</label>
+                <select name="horario_funcionario" class="form-select">
+                    <option value="">-- Selecionar --</option>
+                    {% for u in form.horario_funcionario.field.queryset %}
+                    <option value="{{ u.pk }}">{{ u.get_full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Dia</label>
+                <select name="horario_dia_semana" class="form-select">
+                    {% for val,label in form.horario_dia_semana.field.choices %}
+                    <option value="{{ val }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Início</label>
+                <input type="time" name="horario_hora_inicio" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Fim</label>
+                <input type="time" name="horario_hora_fim" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Data Início</label>
+                <input type="date" name="horario_data_inicio" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Data Fim</label>
+                <input type="date" name="horario_data_fim" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 remover-horario">Remover</button>
+            </div>
+        `;
+        rows.appendChild(div);
+        bindRemoveButtons(div);
+    }
+
+    if (checkbox) {
+        checkbox.addEventListener('change', toggleContainer);
+        toggleContainer();
+    }
+
+    bindRemoveButtons(rows);
+
+    if (adicionarBtn) {
+        adicionarBtn.addEventListener('click', createRow);
+    }
+});
+</script>
+{% endblock %}

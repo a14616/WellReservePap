@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Reserva #{{ reserva.pk }} - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Início</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'reservas_lista' %}">Reservas</a></li>
+            <li class="breadcrumb-item active">Reserva #{{ reserva.pk }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>Reserva #{{ reserva.pk }}
+                    </h4>
+                    <span class="badge badge-{{ reserva.estado }} fs-6">
+                        {{ reserva.get_estado_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-muted mb-2">Serviço</h6>
+                            <div class="d-flex align-items-center">
+                                {% if reserva.servico.imagem %}
+                                <img src="{{ reserva.servico.imagem.url }}" class="rounded me-3" width="60" height="60" style="object-fit: cover;">
+                                {% endif %}
+                                <div>
+                                    <h5 class="mb-1">{{ reserva.servico.nome }}</h5>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ reserva.servico.duracao_formatada }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-muted mb-2">Data e Hora</h6>
+                            <h5 class="mb-1">
+                                <i class="fas fa-calendar me-2"></i>{{ reserva.data|date:"d/m/Y" }}
+                            </h5>
+                            <h5>
+                                <i class="fas fa-clock me-2"></i>{{ reserva.hora|time:"H:i" }}
+                            </h5>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-muted mb-2">Cliente</h6>
+                            <p class="mb-1"><strong>{{ reserva.cliente.get_full_name }}</strong></p>
+                            <p class="mb-1 text-muted">
+                                <i class="fas fa-envelope me-2"></i>{{ reserva.cliente.email }}
+                            </p>
+                            {% if reserva.cliente.telefone %}
+                            <p class="mb-0 text-muted">
+                                <i class="fas fa-phone me-2"></i>{{ reserva.cliente.telefone }}
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-muted mb-2">Profissional</h6>
+                            {% if reserva.funcionario %}
+                            <p class="mb-0"><strong>{{ reserva.funcionario.get_full_name }}</strong></p>
+                            {% else %}
+                            <p class="mb-0 text-muted">Não atribuído</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if reserva.notas %}
+                    <hr>
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-2">Observações</h6>
+                        <p class="mb-0">{{ reserva.notas }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Preço</h6>
+                            <h3 class="mb-0" style="color: var(--accent-color);">{{ reserva.preco_final }}€</h3>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Criada em</h6>
+                            <p class="mb-0">{{ reserva.data_criacao|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if user.is_admin or user.is_funcionario or user.is_recepcao %}
+                            {% if reserva.estado == 'pendente' %}
+                            <a href="{% url 'reserva_confirmar' reserva.pk %}" class="btn btn-success">
+                                <i class="fas fa-check me-2"></i>Confirmar
+                            </a>
+                            {% elif reserva.estado == 'confirmada' %}
+                            <a href="{% url 'reserva_concluir' reserva.pk %}" class="btn btn-success">
+                                <i class="fas fa-check-double me-2"></i>Concluir
+                            </a>
+                            <a href="{% url 'reserva_nao_compareceu' reserva.pk %}" class="btn btn-outline-warning">
+                                <i class="fas fa-user-slash me-2"></i>Não compareceu
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'reserva_editar' reserva.pk %}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-2"></i>Editar
+                            </a>
+                        {% endif %}
+                        
+                        {% if reserva.pode_cancelar or user.is_admin or user.is_recepcao %}
+                        <a href="{% url 'reserva_cancelar' reserva.pk %}" class="btn btn-outline-danger">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'reservas_lista' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Payment Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Pagamento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        O pagamento é efetuado presencialmente no local de atendimento.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Status Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Estado</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="d-flex align-items-center mb-3">
+                            <span class="badge rounded-pill {% if reserva.estado in 'pendente,confirmada,concluida' %}bg-success{% else %}bg-secondary{% endif %} me-3">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            <div>
+                                <strong>Criada</strong>
+                                <br>
+                                <small class="text-muted">{{ reserva.data_criacao|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center mb-3">
+                            <span class="badge rounded-pill {% if reserva.estado in 'confirmada,concluida' %}bg-success{% elif reserva.estado == 'cancelada' %}bg-danger{% else %}bg-secondary{% endif %} me-3">
+                                {% if reserva.estado == 'cancelada' %}
+                                <i class="fas fa-times"></i>
+                                {% else %}
+                                <i class="fas fa-check"></i>
+                                {% endif %}
+                            </span>
+                            <div>
+                                {% if reserva.estado == 'cancelada' %}
+                                <strong>Cancelada</strong>
+                                {% else %}
+                                <strong>Confirmada</strong>
+                                {% endif %}
+                                {% if reserva.data_confirmacao %}
+                                <br>
+                                <small class="text-muted">{{ reserva.data_confirmacao|date:"d/m/Y H:i" }}</small>
+                                {% endif %}
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <span class="badge rounded-pill {% if reserva.estado == 'concluida' or reserva.estado == 'nao_compareceu' %}bg-success{% else %}bg-secondary{% endif %} me-3">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            <div>
+                                {% if reserva.estado == 'nao_compareceu' %}
+                                <strong>Não compareceu</strong>
+                                {% else %}
+                                <strong>Concluída</strong>
+                                {% endif %}
+                                {% if reserva.data_conclusao %}
+                                <br>
+                                <small class="text-muted">{{ reserva.data_conclusao|date:"d/m/Y H:i" }}</small>
+                                {% endif %}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

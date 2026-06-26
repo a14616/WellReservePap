@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Produtos - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1><i class="fas fa-shopping-bag me-2"></i>Nossos Produtos</h1>
+        <p class="lead text-muted">Produtos úteis para complementar os seus serviços e operações</p>
+    </div>
+    
+    <!-- Category Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                <a href="{% url 'produtos_lista' %}" 
+                   class="btn {% if not categoria_selecionada %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Todos
+                </a>
+                {% for categoria in categorias %}
+                <a href="{% url 'produtos_lista' %}?categoria={{ categoria.pk }}" 
+                   class="btn {% if categoria_selecionada == categoria.pk %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    {{ categoria.nome }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Products Grid -->
+    <div class="row g-4">
+        {% for produto in produtos %}
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card product-card h-100">
+                <img src="{{ produto.imagem_capa }}" class="card-img-top" alt="{{ produto.nome }}">
+                <span class="product-price">{{ produto.preco }}€</span>
+                {% if produto.stock <= 5 and produto.stock > 0 %}
+                <span class="position-absolute top-0 start-0 m-2 badge bg-warning">
+                    Últimas unidades
+                </span>
+                {% elif produto.stock == 0 %}
+                <span class="position-absolute top-0 start-0 m-2 badge bg-danger">
+                    Esgotado
+                </span>
+                {% endif %}
+                <div class="card-body">
+                    {% if produto.categoria %}
+                    <span class="badge bg-secondary mb-2">{{ produto.categoria.nome }}</span>
+                    {% endif %}
+                    <h5 class="card-title">{{ produto.nome }}</h5>
+                    <p class="card-text text-muted small">{{ produto.descricao|truncatewords:15 }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        {% if produto.stock > 0 %}
+                        <form method="post" action="{% url 'carrinho_adicionar' produto.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-cart-plus me-1"></i>Adicionar
+                            </button>
+                        </form>
+                        {% else %}
+                        <button class="btn btn-secondary btn-sm" disabled>
+                            Esgotado
+                        </button>
+                        {% endif %}
+                        <a href="{% url 'produto_detalhe' produto.pk %}" class="btn btn-outline-primary btn-sm">
+                            Ver Mais
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">Nenhum produto encontrado</h4>
+                <p class="text-muted">Tente selecionar outra categoria</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Cart Summary (if items in cart) -->
+    {% if carrinho_total > 0 %}
+    <div class="position-fixed bottom-0 end-0 m-4">
+        <a href="{% url 'carrinho' %}" class="btn btn-primary btn-lg shadow">
+            <i class="fas fa-shopping-cart me-2"></i>
+            Ver Carrinho ({{ carrinho_itens }} itens)
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

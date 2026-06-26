@@ -1,0 +1,28 @@
+Olá {{ cliente.first_name }},
+
+Segue a fatura da sua encomenda.
+
+DETALHES DA FATURA:
+-------------------
+Encomenda: #{{ encomenda.pk }}
+Fatura: {{ encomenda.numero_fatura }}
+Data: {{ data_fatura|date:'d/m/Y H:i' }}
+Nome de Faturação: {{ encomenda.faturacao_nome }}
+Email de Faturação: {{ encomenda.faturacao_email }}
+NIF: {{ encomenda.faturacao_nif|default:'-' }}
+Morada de Faturação: {{ encomenda.faturacao_morada }}
+Estado do Pagamento: {{ encomenda.get_estado_pagamento_display }}
+Método de Pagamento: {{ encomenda.get_metodo_pagamento_display }}
+
+ITENS:
+------
+{% for item in itens %}{{ item.quantidade }}x {{ item.produto.nome }} - {{ item.preco_unitario }} EUR cada - {{ item.subtotal }} EUR
+{% endfor %}
+
+Total: {{ encomenda.total }} EUR
+
+Pode consultar este documento na sua conta na aplicação.
+
+Se tiver dúvidas, contacte-nos através de {{ contacto_email }}.
+
+WellReserve

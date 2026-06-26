@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Fatura {{ encomenda.numero_fatura }} - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-1"><i class="fas fa-file-invoice me-2"></i>Fatura {{ encomenda.numero_fatura }}</h2>
+            <p class="text-muted mb-0">Encomenda #{{ encomenda.pk }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'encomenda_fatura_pdf' encomenda.pk %}" class="btn btn-primary">
+                <i class="fas fa-file-pdf me-2"></i>Ver PDF
+            </a>
+            <a href="{% url 'encomenda_fatura_pdf' encomenda.pk %}?download=1" class="btn btn-outline-primary">
+                <i class="fas fa-download me-2"></i>Descarregar PDF
+            </a>
+            <a href="{% url 'encomenda_detalhe' encomenda.pk %}" class="btn btn-outline-secondary">Voltar</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 invoice-sheet">
+        <div class="card-header bg-primary text-white py-4">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div>
+                    <h3 class="mb-1">WellReserve</h3>
+                    <p class="mb-0 opacity-75">Documento fiscal da encomenda</p>
+                </div>
+                <div class="text-end">
+                    <div><strong>Fatura:</strong> {{ encomenda.numero_fatura }}</div>
+                    <div><strong>Data:</strong> {{ data_fatura|date:'d/m/Y H:i' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4 p-lg-5">
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="p-3 rounded bg-light h-100">
+                        <div class="text-uppercase text-muted small mb-2">Dados de Faturação</div>
+                        <p class="mb-1"><strong>{{ encomenda.faturacao_nome|default:cliente.get_full_name }}</strong></p>
+                        <p class="mb-1">{{ encomenda.faturacao_email }}</p>
+                        <p class="mb-1"><strong>NIF:</strong> {{ encomenda.faturacao_nif|default:'-' }}</p>
+                        <p class="mb-0"><strong>Morada:</strong><br>{{ encomenda.faturacao_morada|linebreaksbr|default:'-' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded bg-light h-100">
+                        <div class="text-uppercase text-muted small mb-2">Resumo</div>
+                        <p class="mb-1"><strong>Encomenda:</strong> #{{ encomenda.pk }}</p>
+                        <p class="mb-1"><strong>Estado do Pagamento:</strong> {{ encomenda.get_estado_pagamento_display }}</p>
+                        <p class="mb-1"><strong>Método de Pagamento:</strong> {{ encomenda.get_metodo_pagamento_display }}</p>
+                        <p class="mb-1"><strong>Referência:</strong> {{ encomenda.referencia_pagamento|default:'-' }}</p>
+                        <p class="mb-0"><strong>Data de Pagamento:</strong> {{ encomenda.data_pagamento|date:'d/m/Y H:i'|default:'-' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Produto</th>
+                            <th class="text-center" style="width: 90px;">Qtd</th>
+                            <th class="text-end" style="width: 140px;">Preço Unitário</th>
+                            <th class="text-end" style="width: 140px;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in itens %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.produto.nome }}</strong>
+                                {% if item.produto.descricao %}
+                                <div class="text-muted small">{{ item.produto.descricao|truncatechars:120 }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">{{ item.quantidade }}</td>
+                            <td class="text-end">{{ item.preco_unitario }} EUR</td>
+                            <td class="text-end">{{ item.subtotal }} EUR</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row justify-content-end mt-4">
+                <div class="col-md-5 col-lg-4">
+                    <div class="p-3 rounded bg-light">
+                        <div class="d-flex justify-content-between">
+                            <span>Subtotal</span>
+                            <strong>{{ encomenda.total }} EUR</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fs-5">
+                            <span>Total</span>
+                            <strong>{{ encomenda.total }} EUR</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .btn, .navbar, .footer, .no-print {
+            display: none !important;
+        }
+        body {
+            background: white !important;
+        }
+        .invoice-sheet {
+            box-shadow: none !important;
+            border: none !important;
+        }
+    }
+</style>
+{% endblock %}

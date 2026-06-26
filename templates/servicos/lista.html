@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Serviços - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1><i class="fas fa-layer-group me-2"></i>Nossos Serviços</h1>
+        <p class="lead text-muted">Descubra os serviços disponíveis para diferentes necessidades</p>
+    </div>
+    
+    <!-- Category Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                <a href="{% url 'servicos_lista' %}" 
+                   class="btn {% if not categoria_selecionada %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Todos
+                </a>
+                {% for categoria in categorias %}
+                <a href="{% url 'servicos_lista' %}?categoria={{ categoria.pk }}" 
+                   class="btn {% if categoria_selecionada == categoria.pk %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    <i class="fas {{ categoria.icone|default:'fa-tag' }} me-1"></i>
+                    {{ categoria.nome }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Services Grid -->
+    <div class="row g-4">
+        {% for servico in servicos %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card service-card h-100">
+                <img src="{{ servico.imagem_capa }}" class="card-img-top" alt="{{ servico.nome }}">
+                <span class="service-price">{{ servico.preco }}€</span>
+                <div class="card-body">
+                    {% if servico.categoria %}
+                    <span class="badge bg-secondary mb-2">{{ servico.categoria.nome }}</span>
+                    {% endif %}
+                    <h5 class="card-title">{{ servico.nome }}</h5>
+                    <p class="card-text text-muted">{{ servico.descricao|truncatewords:20 }}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ servico.duracao_formatada }}
+                            </small>
+                            {% if servico.requer_prescricao %}
+                            <br>
+                            <small class="text-warning">
+                                <i class="fas fa-file-medical me-1"></i>Requer validação
+                            </small>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'servico_detalhe' servico.pk %}" class="btn btn-primary">
+                            Ver Detalhes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-layer-group fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">Nenhum serviço encontrado</h4>
+                <p class="text-muted">Tente selecionar outra categoria</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="fas fa-briefcase me-2"></i>WellReserve
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-label="Abrir menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end offcanvas-lg text-bg-dark" tabindex="-1" id="mainNavbar" aria-labelledby="mainNavbarLabel" data-bs-backdrop="false" data-bs-scroll="true">
+            <div class="offcanvas-header d-lg-none">
+                <h5 class="offcanvas-title" id="mainNavbarLabel">
+                    <i class="fas fa-briefcase me-2"></i>WellReserve
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home me-1" style="color: white;"></i> Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'servicos_lista' %}"><i class="fas fa-concierge-bell me-1" style="color: white;"></i> Serviços</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'produtos_lista' %}"><i class="fas fa-shopping-bag me-1" style="color: white;"></i> Produtos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'sobre' %}"><i class="fas fa-info-circle me-1" style="color: white;"></i> Sobre</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contacto' %}"><i class="fas fa-envelope me-1" style="color: white;"></i> Contacto</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'carrinho' %}">
+                                <i class="fas fa-shopping-cart" style="color: white;"></i>
+                                {% if request.session.carrinho %}
+                                    <span class="badge bg-warning">{{ request.session.carrinho|length }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1" style="color: white;"></i> {{ user.first_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt me-2" style="color: #1a5f7a;"></i>Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="fas fa-user me-2" style="color: #1a5f7a;"></i>Perfil</a></li>
+                                <li><a class="dropdown-item" href="{% url 'minhas_reservas' %}"><i class="fas fa-calendar-check me-2" style="color: #1a5f7a;"></i>Minhas Reservas</a></li>
+                                <li><a class="dropdown-item" href="{% url 'encomendas_lista' %}"><i class="fas fa-box me-2" style="color: #1a5f7a;"></i>Minhas Encomendas</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2" style="color: #dc3545;"></i>Sair</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt me-1" style="color: white;"></i> Entrar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-accent btn-sm ms-lg-2 mt-2 mt-lg-0" href="{% url 'registo' %}"><i class="fas fa-user-plus me-1" style="color: white;"></i> Registar</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

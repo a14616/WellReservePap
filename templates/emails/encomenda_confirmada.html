@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #1a5f7a; color: white; padding: 30px; border-radius: 5px 5px 0 0; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 5px 5px; }
+        .info-box { background: white; padding: 20px; border-left: 4px solid #1a5f7a; margin: 20px 0; }
+        .info-row { margin: 10px 0; }
+        .label { font-weight: bold; color: #2c3e50; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table th, .table td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Encomenda Confirmada</h1>
+        </div>
+        <div class="content">
+            <p>Olá <strong>{{ cliente.first_name }}</strong>,</p>
+            <p>A sua encomenda foi confirmada com sucesso.</p>
+
+            <div class="info-box">
+                <div class="info-row"><span class="label">Número da Encomenda:</span> #{{ encomenda.pk }}</div>
+                <div class="info-row"><span class="label">Fatura:</span> {{ encomenda.numero_fatura }}</div>
+                <div class="info-row"><span class="label">Estado do Pagamento:</span> {{ encomenda.get_estado_pagamento_display }}</div>
+                <div class="info-row"><span class="label">Método de Pagamento:</span> {{ encomenda.get_metodo_pagamento_display }}</div>
+                <div class="info-row"><span class="label">Morada de Entrega:</span><br>{{ encomenda.entrega_morada|linebreaksbr }}</div>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtd</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in itens %}
+                    <tr>
+                        <td>{{ item.produto.nome }}</td>
+                        <td>{{ item.quantidade }}</td>
+                        <td>{{ item.subtotal }} EUR</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p style="margin-top: 20px;"><strong>Total:</strong> {{ encomenda.total }} EUR</p>
+            <p style="color: #666;">Se tiver dúvidas, contacte-nos através de {{ contacto_email }}.</p>
+        </div>
+        <div class="footer">
+            <p><strong>WellReserve</strong></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Funcionário - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+        <span class="text-muted">Olá, {{ user.first_name }}!</span>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Today's Reservations -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-day me-2"></i>Reservas de Hoje
+                    </h5>
+                    <span class="badge bg-light text-dark">{{ minhas_reservas_hoje|length }} reservas</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Cliente</th>
+                                    <th>Serviço</th>
+                                    <th>Estado</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reserva in minhas_reservas_hoje %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ reserva.hora|time:"H:i" }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ reserva.servico.duracao_formatada }}</small>
+                                    </td>
+                                    <td>
+                                        {{ reserva.cliente.get_full_name }}
+                                        {% if reserva.cliente.telefone %}
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-phone me-1"></i>{{ reserva.cliente.telefone }}
+                                        </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ reserva.servico.nome }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ reserva.estado }}">
+                                            {{ reserva.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'reserva_detalhe' reserva.pk %}" class="btn btn-outline-primary" title="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if reserva.estado == 'pendente' %}
+                                            <a href="{% url 'reserva_confirmar' reserva.pk %}" class="btn btn-outline-success" title="Confirmar">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                            {% elif reserva.estado == 'confirmada' %}
+                                            <a href="{% url 'reserva_concluir' reserva.pk %}" class="btn btn-outline-success" title="Concluir">
+                                                <i class="fas fa-check-double"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        <i class="fas fa-calendar-times fa-3x mb-3 d-block opacity-50"></i>
+                                        Não tem reservas para hoje
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {# 'Reservas que Fiz' foi removido do dashboard; use a página 'Minhas Reservas' no menu #}
+            
+            <!-- Upcoming Reservations -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Próximas Reservas</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Hora</th>
+                                    <th>Cliente</th>
+                                    <th>Serviço</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reserva in proximas_reservas %}
+                                <tr>
+                                    <td>{{ reserva.data|date:"d/m/Y" }}</td>
+                                    <td>{{ reserva.hora|time:"H:i" }}</td>
+                                    <td>{{ reserva.cliente.get_full_name }}</td>
+                                    <td>{{ reserva.servico.nome }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ reserva.estado }}">
+                                            {{ reserva.get_estado_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        Nenhuma reserva futura
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'reservas_lista' %}" class="btn btn-primary btn-sm">
+                        Ver Todas as Reservas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4 dashboard-sidebar">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Meus Horários</h5>
+                    {% if user.is_admin or user.is_recepcao %}
+                    <a href="{% url 'horarios_gestao' %}" class="btn btn-sm btn-outline-light">Gerir</a>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for horario in meus_horarios %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ horario.get_dia_semana_display }}</span>
+                            <span class="text-muted">
+                                {{ horario.hora_inicio|time:"H:i" }} - {{ horario.hora_fim|time:"H:i" }}
+                            </span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-center text-muted">
+                            Nenhum horário definido
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Ações Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'reservas_lista' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-check me-2"></i>Ver Reservas
+                        </a>
+                        <a href="{% url 'minhas_reservas' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-check me-2"></i>Minhas Reservas
+                        </a>
+                        <a href="{% url 'perfil' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-user me-2"></i>Meu Perfil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

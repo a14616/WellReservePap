@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Contacto - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <h1 class="mb-4"><i class="fas fa-envelope me-2"></i>Contacte-nos</h1>
+            <p class="lead text-muted mb-4">
+                Tem alguma dúvida ou sugestão? Entre em contacto connosco.
+                Estamos disponíveis para responder a questões sobre a plataforma e a sua utilização.
+            </p>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_nome" class="form-label">Nome *</label>
+                                {{ form.nome }}
+                                {% if form.nome.errors %}
+                                    <div class="text-danger small mt-1">{{ form.nome.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_email" class="form-label">Email *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_telefone" class="form-label">Telefone</label>
+                            {{ form.telefone }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_assunto" class="form-label">Assunto *</label>
+                            {{ form.assunto }}
+                            {% if form.assunto.errors %}
+                                <div class="text-danger small mt-1">{{ form.assunto.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_mensagem" class="form-label">Mensagem *</label>
+                            {{ form.mensagem }}
+                            {% if form.mensagem.errors %}
+                                <div class="text-danger small mt-1">{{ form.mensagem.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane me-2"></i>Enviar Mensagem
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <!-- Contact Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informações de Contacto</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex mb-3">
+                        <div class="me-3">
+                            <i class="fas fa-map-marker-alt fa-2x" style="color: white;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Morada</h6>
+                            <p class="text-muted mb-0">
+                                Oficina - Escola Profissional do INA<br>
+                                Areias<br>
+                                Portugal
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-3">
+                        <div class="me-3">
+                            <i class="fas fa-phone fa-2x" style="color: white;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Telefone</h6>
+                            <p class="text-muted mb-0">
+                                <a href="tel:+351252861234" class="text-decoration-none">+351 252 861 234</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-3">
+                        <div class="me-3">
+                            <i class="fas fa-envelope fa-2x" style="color: white;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Email</h6>
+                            <p class="text-muted mb-0">
+                                <a href="mailto:wellreservepap@gmail.com" class="text-decoration-none">wellreservepap@gmail.com</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-clock fa-2x" style="color: white;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Horário de Funcionamento</h6>
+                            <p class="text-muted mb-0">
+                                Segunda a Sexta: 09:00 - 19:00<br>
+                                Sábado: 09:00 - 13:00<br>
+                                Domingo: Encerrado
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-map me-2"></i>Localização</h5>
+                </div>
+                <div class="card-body p-0">
+                    <iframe
+                        src="https://maps.google.com/maps?q=Escola%20Profissional%20do%20INA%20Areias&output=embed"
+                        width="100%"
+                        height="300"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+            
+            <!-- Social Media -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-share-alt me-2"></i>Redes Sociais</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-primary btn-lg">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-info btn-lg">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-success btn-lg">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

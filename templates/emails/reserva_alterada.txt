@@ -1,0 +1,22 @@
+Olá {{ cliente.first_name }},
+
+A sua reserva foi atualizada com sucesso.
+
+DETALHES ATUAIS DA RESERVA:
+---------------------------
+Serviço: {{ servico.nome }}
+Data: {{ data|date:"d/m/Y" }}
+Hora: {{ hora|time:"H:i" }}
+Funcionário: {{ funcionario.get_full_name|default:funcionario.username }}
+
+ALTERAÇÕES EFETUADAS:
+---------------------
+{% for alteracao in alteracoes %}
+- {{ alteracao.rotulo }}: {{ alteracao.antigo }} -> {{ alteracao.novo }}
+{% endfor %}
+
+Se tiver dúvidas, contacte-nos por este email.
+
+Obrigado,
+WellReserve
+{{ contacto_email }}

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+                <span class="text-muted">Olá, {{ user.first_name }}!</span>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card info">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="text-muted mb-1">Reservas Hoje</h6>
+                                    <h3 class="mb-0">{{ reservas_hoje }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-calendar-day fa-2x text-info opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card warning">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="text-muted mb-1">Reservas Pendentes</h6>
+                                    <h3 class="mb-0">{{ reservas_pendentes }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-clock fa-2x text-warning opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="text-muted mb-1">Total Clientes</h6>
+                                    <h3 class="mb-0">{{ total_clientes }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-users fa-2x text-success opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card danger">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="text-muted mb-1">Encomendas Pendentes</h6>
+                                    <h3 class="mb-0">{{ encomendas_pendentes }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-box fa-2x text-danger opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Recent Reservations -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Reservas Recentes</h5>
+                            <a href="{% url 'reservas_lista' %}" class="btn btn-sm btn-outline-light">Ver Todas</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Cliente</th>
+                                            <th>Serviço</th>
+                                            <th>Data</th>
+                                            <th>Estado</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for reserva in reservas_recentes %}
+                                        <tr>
+                                            <td>{{ reserva.cliente.get_full_name }}</td>
+                                            <td>{{ reserva.servico.nome }}</td>
+                                            <td>{{ reserva.data|date:"d/m/Y" }} {{ reserva.hora|time:"H:i" }}</td>
+                                            <td>
+                                                <span class="badge badge-{{ reserva.estado }}">
+                                                    {{ reserva.get_estado_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'reserva_detalhe' reserva.pk %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-4">
+                                                Nenhuma reserva encontrada
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions & Recent Orders -->
+                <div class="col-lg-4">
+                    <!-- Quick Actions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Ações Rápidas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'servico_criar' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-plus me-2"></i>Novo Serviço
+                                </a>
+                                <a href="{% url 'produto_criar' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-plus me-2"></i>Novo Produto
+                                </a>
+                                <a href="{% url 'utilizador_criar' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-user-plus me-2"></i>Novo Utilizador
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Orders -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-box me-2"></i>Encomendas</h5>
+                            <a href="{% url 'encomendas_lista' %}" class="btn btn-sm btn-outline-light">Ver</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                {% for encomenda in encomendas_recentes %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>#{{ encomenda.pk }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ encomenda.cliente.get_full_name }}</small>
+                                    </div>
+                                    <span class="badge badge-{{ encomenda.estado }}">
+                                        {{ encomenda.get_estado_display }}
+                                    </span>
+                                </li>
+                                {% empty %}
+                                <li class="list-group-item text-center text-muted">
+                                    Nenhuma encomenda
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

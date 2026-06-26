@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}Nova Reserva - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>Nova Reserva</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="reservaForm">
+                        {% csrf_token %}
+                        
+                        {% if request.user.is_recepcao or request.user.is_admin %}
+                        <!-- Campo de Cliente com Busca -->
+                        <div class="mb-4">
+                            <label for="clienteSearch" class="form-label">Cliente *</label>
+                            <div class="input-group">
+                                <input type="text" id="clienteSearch" class="form-control" placeholder="Procurar por email, telefone ou nome..." autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" id="btnLimparCliente" style="display: none;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div id="clientesSugestoes" class="list-group mt-2" style="display: none; position: absolute; width: 100%; max-height: 300px; overflow-y: auto; z-index: 1000;">
+                                <!-- Sugestões aparecem aqui -->
+                            </div>
+                            <div id="clienteSelecionado" class="mt-2" style="display: none;">
+                                <div class="alert alert-info mb-0">
+                                    <strong>Cliente:</strong> <span id="clienteNomeSelecionado"></span>
+                                    <br><small id="clienteEmailSelecionado"></small>
+                                </div>
+                            </div>
+                            {{ form.cliente }}
+                            {% if form.cliente.errors %}
+                                <div class="text-danger small mt-1">{{ form.cliente.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <label for="id_servico" class="form-label">Serviço *</label>
+                            {{ form.servico }}
+                            {% if form.servico.errors %}
+                                <div class="text-danger small mt-1">{{ form.servico.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="id_data" class="form-label">Data *</label>
+                                {{ form.data }}
+                                {% if form.data.errors %}
+                                    <div class="text-danger small mt-1">{{ form.data.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <!-- Hidden hora field: selecionada através dos botões de horários disponíveis -->
+                                <div class="d-none">{{ form.hora }}</div>
+                                <label class="form-label d-none">Hora *</label>
+                                <input id="selectedHoraDisplay" class="form-control d-none" type="text" readonly />
+                                {% if form.hora.errors %}
+                                    <div class="text-danger small mt-1">{{ form.hora.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_funcionario" class="form-label">Profissional (opcional)</label>
+                            {{ form.funcionario }}
+                            <small class="text-muted">Deixe em branco para qualquer profissional disponível</small>
+                        </div>
+                        
+                        <!-- Available Slots -->
+                        <div id="horariosDisponiveis" class="mb-4" style="display: none;">
+                            <label class="form-label">Horários Disponíveis</label>
+                            <div id="horariosLista" class="d-flex flex-wrap gap-2">
+                                <!-- Slots will be loaded here via JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_notas" class="form-label">Observações</label>
+                            {{ form.notas }}
+                            <small class="text-muted">Informações adicionais que considere relevantes</small>
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Nota:</strong> O pagamento é efetuado presencialmente na receção.
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                <i class="fas fa-check me-2"></i>Confirmar Reserva
+                            </button>
+                            <a href="{% url 'servicos_lista' %}" class="btn btn-outline-secondary btn-lg">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Busca de clientes (apenas receção)
+    const clienteSearchInput = document.getElementById('clienteSearch');
+    const clientesSugestoes = document.getElementById('clientesSugestoes');
+    const clienteSelecionado = document.getElementById('clienteSelecionado');
+    const clienteNomeSelecionado = document.getElementById('clienteNomeSelecionado');
+    const clienteEmailSelecionado = document.getElementById('clienteEmailSelecionado');
+    const btnLimparCliente = document.getElementById('btnLimparCliente');
+    const clienteInputHidden = document.getElementById('id_cliente');
+    
+    if (clienteSearchInput) {
+        // Desabilitar submit se for receção e cliente não estiver selecionado
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn && clienteInputHidden) {
+            function validarSubmit() {
+                if (clienteInputHidden.value === '') {
+                    submitBtn.disabled = true;
+                    submitBtn.title = 'Selecione um cliente primeiro';
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.title = '';
+                }
+            }
+            validarSubmit();
+        }
+        
+        let timerBusca;
+        
+        clienteSearchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            clearTimeout(timerBusca);
+            
+            if (query.length < 2) {
+                clientesSugestoes.style.display = 'none';
+                return;
+            }
+            
+            timerBusca = setTimeout(() => {
+                fetch(`/api/procurar-clientes/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        clientesSugestoes.innerHTML = '';
+                        
+                        if (data.clientes && data.clientes.length > 0) {
+                            data.clientes.forEach(cliente => {
+                                const div = document.createElement('div');
+                                div.className = 'list-group-item list-group-item-action cursor-pointer';
+                                div.style.cursor = 'pointer';
+                                div.innerHTML = `
+                                    <strong>${cliente.nome}</strong>
+                                    <br><small class="text-muted">Email: ${cliente.email} | Telefone: ${cliente.telefone}</small>
+                                `;
+                                div.addEventListener('click', () => selecionarCliente(cliente));
+                                clientesSugestoes.appendChild(div);
+                            });
+                            clientesSugestoes.style.display = 'block';
+                        } else {
+                            clientesSugestoes.innerHTML = '<div class="list-group-item text-muted">Nenhum cliente encontrado</div>';
+                            clientesSugestoes.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro na busca:', error);
+                        clientesSugestoes.innerHTML = '<div class="list-group-item text-danger">Erro ao procurar clientes</div>';
+                        clientesSugestoes.style.display = 'block';
+                    });
+            }, 300);
+        });
+        
+        function selecionarCliente(cliente) {
+            clienteInputHidden.value = cliente.id;
+            clienteSearchInput.value = cliente.nome;
+            clienteNomeSelecionado.textContent = cliente.nome;
+            clienteEmailSelecionado.textContent = `Email: ${cliente.email} | Telefone: ${cliente.telefone}`;
+            clienteSelecionado.style.display = 'block';
+            clientesSugestoes.style.display = 'none';
+            btnLimparCliente.style.display = 'inline-block';
+            validarSubmit();
+        }
+        
+        if (btnLimparCliente) {
+            btnLimparCliente.addEventListener('click', () => {
+                clienteInputHidden.value = '';
+                clienteSearchInput.value = '';
+                clienteSelecionado.style.display = 'none';
+                clientesSugestoes.style.display = 'none';
+                btnLimparCliente.style.display = 'none';
+                validarSubmit();
+                clienteSearchInput.focus();
+            });
+        }
+        
+        // Fechar sugestões ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (e.target !== clienteSearchInput && e.target !== clientesSugestoes) {
+                clientesSugestoes.style.display = 'none';
+            }
+        });
+    }
+    
+    // Horários disponíveis (código existente)
+    const servicoSelect = document.getElementById('id_servico');
+    const dataInput = document.getElementById('id_data');
+    const horaInput = document.getElementById('id_hora');
+    const funcionarioSelect = document.getElementById('id_funcionario');
+    const horariosDiv = document.getElementById('horariosDisponiveis');
+    const horariosLista = document.getElementById('horariosLista');
+    const selectedDisplay = document.getElementById('selectedHoraDisplay');
+
+    // inicializar estado
+    if (horaInput && horaInput.value) {
+        selectedDisplay.value = horaInput.value;
+    }
+
+    function carregarHorarios() {
+        const servico = servicoSelect.value;
+        const data = dataInput.value;
+        const funcionario = funcionarioSelect.value;
+
+        if (!servico || !data) {
+            horariosLista.innerHTML = '';
+            selectedDisplay.value = '';
+            horariosDiv.style.display = 'none';
+            return;
+        }
+
+        let url = `/api/horarios-disponiveis/?servico=${servico}&data=${data}`;
+        if (funcionario) {
+            url += `&funcionario=${funcionario}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                horariosLista.innerHTML = '';
+                selectedDisplay.value = '';
+
+                    if (data.horarios && data.horarios.length > 0) {
+                    data.horarios.forEach(horario => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'btn btn-outline-primary';
+                        btn.textContent = horario.hora;
+                        btn.dataset.funcionario = horario.funcionario_id;
+                        btn.title = horario.funcionario_nome;
+
+                        btn.addEventListener('click', function() {
+                            // guardar valor no campo hidden
+                            horaInput.value = horario.hora;
+                            selectedDisplay.value = horario.hora;
+                            if (!funcionarioSelect.value) {
+                                funcionarioSelect.value = horario.funcionario_id;
+                            }
+
+                            // Highlight selected
+                            horariosLista.querySelectorAll('.btn').forEach(b => {
+                                b.classList.remove('btn-primary');
+                                b.classList.add('btn-outline-primary');
+                            });
+                            btn.classList.remove('btn-outline-primary');
+                            btn.classList.add('btn-primary');
+                        });
+
+                        horariosLista.appendChild(btn);
+                    });
+                    horariosDiv.style.display = 'block';
+                } else {
+                    selectedDisplay.value = '';
+                    horariosLista.innerHTML = '<p class="text-muted">Não existem horários disponíveis para este serviço nesta data.</p>';
+                    horariosDiv.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar horários:', error);
+                horariosLista.innerHTML = '<p class="text-danger">Erro ao carregar horários</p>';
+                horariosDiv.style.display = 'block';
+            });
+    }
+
+    servicoSelect.addEventListener('change', carregarHorarios);
+    dataInput.addEventListener('change', carregarHorarios);
+    funcionarioSelect.addEventListener('change', carregarHorarios);
+
+    // Load on page load if values exist
+    if (servicoSelect.value && dataInput.value) {
+        carregarHorarios();
+    }
+});
+</script>
+{% endblock %}

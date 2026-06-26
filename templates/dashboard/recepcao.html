@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Receção{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="mb-1"><i class="fas fa-headset me-2"></i>Dashboard - Receção</h2>
+            <p class="text-muted mb-0">Bem-vindo(a), {{ user.first_name }}!</p>
+        </div>
+        <a href="{% url 'reserva_criar' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>Nova Reserva
+        </a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'reserva_criar' %}" class="card h-100 text-decoration-none border-0 shadow-sm hover-lift">
+                <div class="card-body text-center py-4">
+                    <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title mb-2">Nova Reserva</h5>
+                    <p class="card-text small text-muted mb-0">Criar reserva para cliente</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'reservas_lista' %}" class="card h-100 text-decoration-none border-0 shadow-sm hover-lift">
+                <div class="card-body text-center py-4">
+                    <i class="fas fa-calendar-check fa-3x text-info mb-3"></i>
+                    <h5 class="card-title mb-2">Reservas</h5>
+                    <p class="card-text small text-muted mb-0">Ver e gerir reservas</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'horarios_gestao' %}" class="card h-100 text-decoration-none border-0 shadow-sm hover-lift">
+                <div class="card-body text-center py-4">
+                    <i class="fas fa-clock fa-3x text-success mb-3"></i>
+                    <h5 class="card-title mb-2">Horários</h5>
+                    <p class="card-text small text-muted mb-0">Ver horários dos funcionários</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-warning bg-opacity-10 border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>Reservas Pendentes Hoje
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if reservas_pendentes_hoje %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Serviço</th>
+                                    <th>Hora</th>
+                                    <th>Funcionário</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reserva in reservas_pendentes_hoje %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ reserva.cliente.get_full_name }}</strong><br>
+                                        <small class="text-muted">{{ reserva.cliente.email }}</small>
+                                    </td>
+                                    <td>{{ reserva.servico.nome }}</td>
+                                    <td><strong>{{ reserva.hora }}</strong></td>
+                                    <td>
+                                        {% if reserva.funcionario %}
+                                            {{ reserva.funcionario.get_full_name }}
+                                        {% else %}
+                                            <span class="badge bg-secondary">Não atribuído</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'reserva_detalhe' reserva.pk %}" class="btn btn-outline-info" title="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'reserva_editar' reserva.pk %}" class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'reserva_confirmar' reserva.pk %}" class="btn btn-outline-success" title="Confirmar">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        Não há reservas pendentes hoje.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Próximas Reservas
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if proximas_reservas %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Cliente</th>
+                                    <th>Serviço</th>
+                                    <th>Hora</th>
+                                    <th>Funcionário</th>
+                                    <th>Estado</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reserva in proximas_reservas %}
+                                <tr>
+                                    <td><strong>{{ reserva.data|date:"d/m/Y" }}</strong></td>
+                                    <td>
+                                        <strong>{{ reserva.cliente.get_full_name }}</strong><br>
+                                        <small class="text-muted">{{ reserva.cliente.telefone|default:"-" }}</small>
+                                    </td>
+                                    <td>{{ reserva.servico.nome }}</td>
+                                    <td><strong>{{ reserva.hora }}</strong></td>
+                                    <td>
+                                        {% if reserva.funcionario %}
+                                            {{ reserva.funcionario.get_full_name }}
+                                        {% else %}
+                                            <span class="badge bg-secondary">Não atribuído</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reserva.estado == 'pendente' %}
+                                            <span class="badge bg-warning">Pendente</span>
+                                        {% elif reserva.estado == 'confirmada' %}
+                                            <span class="badge bg-success">Confirmada</span>
+                                        {% elif reserva.estado == 'cancelada' %}
+                                            <span class="badge bg-danger">Cancelada</span>
+                                        {% elif reserva.estado == 'concluida' %}
+                                            <span class="badge bg-info">Concluída</span>
+                                        {% elif reserva.estado == 'nao_compareceu' %}
+                                            <span class="badge bg-secondary">Não compareceu</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'reserva_detalhe' reserva.pk %}" class="btn btn-outline-info" title="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'reserva_editar' reserva.pk %}" class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        Não existem reservas futuras.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 dashboard-sidebar">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Ações Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'reserva_criar' %}" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus me-2"></i>Criar Reserva
+                        </a>
+                        <a href="{% url 'reservas_lista' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-check me-2"></i>Ver Reservas
+                        </a>
+                        <a href="{% url 'horarios_gestao' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-clock me-2"></i>Horários
+                        </a>
+                        <a href="{% url 'encomendas_lista' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-box me-2"></i>Encomendas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+    }
+</style>
+{% endblock %}

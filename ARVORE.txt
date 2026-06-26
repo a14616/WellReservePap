@@ -1,0 +1,121 @@
+WellReserve/
+├─ ARVORE.txt
+├─ db.sqlite3
+├─ manage.py
+├─ README.md
+├─ RECEPCAO.md
+├─ requirements.txt
+├─ TODO.md
+├─ urls.py
+├─ app/
+│  ├─ __init__.py
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ context_processors.py
+│  ├─ forms.py
+│  ├─ models.py
+│  ├─ serializers.py
+│  ├─ urls.py
+│  ├─ views.py
+│  └─ migrations/
+│     ├─ __init__.py
+│     ├─ 0001_initial.py
+│     ├─ 0002_encomenda_data_pagamento_encomenda_estado_pagamento_and_more.py
+│     ├─ 0003_encomenda_entrega_morada.py
+│     ├─ 0004_add_recepcao_role.py
+│     └─ 0005_feriasfuncionario_estado_horariofuncionario_estado_and_more.py
+├─ backups/
+│  └─ WellReserve-backup-20260522-112347/
+│     ├─ manage.py
+│     ├─ README.md
+│     ├─ RECEPCAO.md
+│     ├─ requirements.txt
+│     ├─ TODO.md
+│     ├─ urls.py
+│     ├─ app/ (cópia parcial)
+│     ├─ scripts/
+│     ├─ static/
+│     ├─ templates/
+│     └─ WellReserve/
+├─ scripts/
+│  └─ test_ferias.py
+├─ static/
+│  ├─ css/
+│  │  ├─ base.css
+│  │  └─ style.css
+│  ├─ img/ (vários ficheiros)
+│  └─ js/
+│     └─ main.js
+├─ templates/
+│  ├─ base.html
+│  ├─ contacto.html
+│  ├─ home.html
+│  ├─ perfil.html
+│  ├─ sobre.html
+│  ├─ auth/
+│  │  ├─ login.html
+│  │  └─ registo.html
+│  ├─ dashboard/
+│  │  ├─ admin.html
+│  │  ├─ cliente.html
+│  │  ├─ funcionario.html
+│  │  └─ recepcao.html
+│  ├─ emails/
+│  │  ├─ conta_criada.html
+│  │  ├─ conta_criada.txt
+│  │  ├─ encomenda_confirmada.html
+│  │  ├─ encomenda_confirmada.txt
+│  │  ├─ encomenda_estado_alterado.html
+│  │  ├─ encomenda_estado_alterado.txt
+│  │  ├─ encomenda_fatura.html
+│  │  ├─ encomenda_fatura.txt
+│  │  ├─ reserva_alterada.html
+│  │  ├─ reserva_alterada.txt
+│  │  ├─ reserva_cancelada.html
+│  │  ├─ reserva_cancelada.txt
+│  │  ├─ reserva_concluida.html
+│  │  ├─ reserva_concluida.txt
+│  │  ├─ reserva_confirmada.html
+│  │  ├─ reserva_confirmada.txt
+│  │  ├─ reserva_nao_compareceu.html
+│  │  └─ reserva_nao_compareceu.txt
+│  ├─ gestao/
+│  │  ├─ categoria_form.html
+│  │  ├─ categorias_servicos.html
+│  │  ├─ confirmar_eliminar.html
+│  │  ├─ contacto_detalhe.html
+│  │  ├─ contactos_lista.html
+│  │  ├─ ferias_form.html
+│  │  ├─ horario_form.html
+│  │  ├─ horarios.html
+│  │  ├─ produto_form.html
+│  │  ├─ produtos.html
+│  │  ├─ relatorios.html
+│  │  ├─ servico_form.html
+│  │  ├─ servicos.html
+│  │  ├─ utilizador_detalhe.html
+│  │  ├─ utilizador_form.html
+│  │  └─ utilizadores.html
+│  ├─ includes/
+│  │  ├─ footer.html
+│  │  ├─ messages.html
+│  │  └─ navbar.html
+│  ├─ produtos/
+│  │  ├─ carrinho.html
+│  │  ├─ detalhe.html
+│  │  ├─ encomenda_detalhe.html
+│  │  ├─ encomendas_lista.html
+│  │  ├─ fatura.html
+│  │  ├─ finalizar.html
+│  │  └─ lista.html
+│  ├─ reservas/
+│  │  ├─ cancelar.html
+│  │  ├─ criar.html
+│  │  └─ ... (outros ficheiros)
+│  └─ servicos/ (vários ficheiros)
+└─ WellReserve/
+   ├─ __init__.py
+   ├─ asgi.py
+   ├─ settings.py
+   ├─ urls.py
+   └─ wsgi.py

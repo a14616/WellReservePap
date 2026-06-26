@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancelar Reserva - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-warning">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>Cancelar Reserva</h5>
+                </div>
+                <div class="card-body">
+                    <p>Tem a certeza que pretende cancelar esta reserva?</p>
+                    <div class="alert alert-light border">
+                        <strong>{{ reserva.servico.nome }}</strong><br>
+                        {{ reserva.data|date:'d/m/Y' }} {{ reserva.hora|time:'H:i' }}
+                    </div>
+                    <form method="post" class="d-flex gap-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-times me-2"></i>Confirmar Cancelamento</button>
+                        <a href="{% url 'reserva_detalhe' reserva.pk %}" class="btn btn-outline-secondary">Voltar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

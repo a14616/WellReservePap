@@ -1,0 +1,39 @@
+<aside class="sidebar admin-sidebar rounded p-3">
+    <h6 class="text-uppercase text-light opacity-50 mb-3">
+        <small>Administração</small>
+    </h6>
+    <nav class="nav flex-column">
+        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+            <i class="fas fa-tachometer-alt" style="color: white;"></i> Dashboard
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'reservas_lista' %}active{% endif %}" href="{% url 'reservas_lista' %}">
+            <i class="fas fa-calendar-check" style="color: white;"></i> Reservas
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'encomendas_lista' %}active{% endif %}" href="{% url 'encomendas_lista' %}">
+            <i class="fas fa-box" style="color: white;"></i> Encomendas
+        </a>
+        <hr class="my-2 opacity-25">
+        <a class="nav-link {% if request.resolver_match.url_name == 'servicos_gestao' %}active{% endif %}" href="{% url 'servicos_gestao' %}">
+            <i class="fas fa-concierge-bell" style="color: white;"></i> Serviços
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'horarios_gestao' %}active{% endif %}" href="{% url 'horarios_gestao' %}">
+            <i class="fas fa-business-time" style="color: white;"></i> Horas dos Serviços
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'categorias_servicos_gestao' %}active{% endif %}" href="{% url 'categorias_servicos_gestao' %}">
+            <i class="fas fa-tags" style="color: white;"></i> Categorias
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'produtos_gestao' %}active{% endif %}" href="{% url 'produtos_gestao' %}">
+            <i class="fas fa-shopping-bag" style="color: white;"></i> Produtos
+        </a>
+        <hr class="my-2 opacity-25">
+        <a class="nav-link {% if request.resolver_match.url_name == 'utilizadores_lista' %}active{% endif %}" href="{% url 'utilizadores_lista' %}">
+            <i class="fas fa-users" style="color: white;"></i> Utilizadores
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'contactos_lista' %}active{% endif %}" href="{% url 'contactos_lista' %}">
+            <i class="fas fa-envelope" style="color: white;"></i> Contactos
+        </a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'relatorios' %}active{% endif %}" href="{% url 'relatorios' %}">
+            <i class="fas fa-chart-bar" style="color: white;"></i> Relatórios
+        </a>
+    </nav>
+</aside>

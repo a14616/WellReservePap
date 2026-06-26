@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Eliminação - WellReserve{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Confirmar eliminação</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Tem a certeza que pretende eliminar este {{ tipo }}?</p>
+                    <div class="alert alert-light border">
+                        <strong>{{ objeto }}</strong>
+                    </div>
+                    <form method="post" class="d-flex gap-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Eliminar
+                        </button>
+                        <a href="{% url voltar_url %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

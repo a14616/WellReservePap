@@ -1,0 +1,15 @@
+Olá {{ cliente.first_name }},
+
+O estado da sua encomenda foi atualizado.
+
+DETALHES DA ENCOMENDA:
+----------------------
+Encomenda: #{{ encomenda.pk }}
+Estado anterior: {{ estado_antigo_label }}
+Novo estado: {{ estado_novo_label }}
+Fatura: {{ encomenda.numero_fatura }}
+Total: {{ encomenda.total }} EUR
+
+Se tiver dúvidas, contacte-nos através de {{ contacto_email }}.
+
+WellReserve

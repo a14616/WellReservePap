@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #f39c12; color: white; padding: 30px; border-radius: 5px 5px 0 0; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 5px 5px; }
+        .info-box { background: white; padding: 20px; border-left: 4px solid #f39c12; margin: 20px 0; }
+        .change-box { background: white; padding: 20px; border-left: 4px solid #3498db; margin: 20px 0; }
+        .info-row { margin: 10px 0; }
+        .label { font-weight: bold; color: #2c3e50; }
+        .change-item { margin: 10px 0; padding: 10px; background: #f8fbff; border-radius: 4px; }
+        .old-value { color: #c0392b; text-decoration: line-through; }
+        .new-value { color: #27ae60; font-weight: bold; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Reserva Atualizada</h1>
+        </div>
+        <div class="content">
+            <p>Olá <strong>{{ cliente.first_name }}</strong>,</p>
+
+            <p>Informamos que a sua reserva foi atualizada com sucesso.</p>
+
+            <div class="info-box">
+                <h3 style="margin-top: 0; color: #f39c12;">Detalhes Atuais da Reserva</h3>
+                <div class="info-row"><span class="label">Serviço:</span> {{ servico.nome }}</div>
+                <div class="info-row"><span class="label">Data:</span> {{ data|date:"d/m/Y" }}</div>
+                <div class="info-row"><span class="label">Hora:</span> {{ hora|time:"H:i" }}</div>
+                <div class="info-row"><span class="label">Funcionário:</span> {{ funcionario.get_full_name|default:funcionario.username }}</div>
+            </div>
+
+            <div class="change-box">
+                <h3 style="margin-top: 0; color: #3498db;">Alterações Efetuadas</h3>
+                {% for alteracao in alteracoes %}
+                <div class="change-item">
+                    <div><strong>{{ alteracao.rotulo }}</strong></div>
+                    <div><span class="old-value">{{ alteracao.antigo }}</span> → <span class="new-value">{{ alteracao.novo }}</span></div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <p style="color: #666;">Se esta alteração não foi esperada, contacte-nos o quanto antes.</p>
+        </div>
+        <div class="footer">
+            <p><strong>WellReserve</strong></p>
+            <p>{{ contacto_email }}</p>
+        </div>
+    </div>
+</body>
+</html>

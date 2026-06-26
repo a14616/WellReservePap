@@ -1,0 +1,17 @@
+Olá {{ cliente.first_name }},
+
+{% if cancelado_pelo_cliente %}A sua reserva foi cancelada por si.{% else %}A sua reserva foi cancelada.{% endif %}
+
+DETALHES DA RESERVA:
+-------------------
+Serviço: {{ servico.nome }}
+Data: {{ data|date:"d/m/Y" }}
+Hora: {{ hora|time:"H:i" }}
+Funcionário: {{ funcionario.get_full_name|default:funcionario.username }}
+Estado: Cancelada
+
+Se desejar agendar novamente, poderá fazer uma nova reserva quando quiser.
+
+Se tiver dúvidas, contacte-nos através de {{ contacto_email }}.
+
+WellReserve
