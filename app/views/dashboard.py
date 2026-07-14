@@ -80,6 +80,7 @@ def contacto(request):
 	return render(request, 'contacto.html', {'form': form})
 
 
+@login_required
 def dashboard(request):
 	"""Dashboard principal - redireciona conforme o tipo de utilizador"""
 	if request.user.is_admin:

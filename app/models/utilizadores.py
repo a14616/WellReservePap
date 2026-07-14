@@ -1,6 +1,12 @@
 """Modelo de utilizadores."""
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.db import models
+
+
+AnonymousUser.is_admin = property(lambda self: False)
+AnonymousUser.is_funcionario = property(lambda self: False)
+AnonymousUser.is_cliente = property(lambda self: False)
+AnonymousUser.is_recepcao = property(lambda self: False)
 
 
 class Utilizador(AbstractUser):
