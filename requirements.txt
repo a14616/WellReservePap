@@ -1,12 +1,15 @@
 asgiref==3.11.1
 charset-normalizer==3.4.7
 crispy-bootstrap5==2026.3
+dj-database-url==2.3.0
 Django==4.2.30
 django-crispy-forms==2.5
 django-debug-toolbar==6.3.0
+gunicorn==23.0.0
 pillow==12.2.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.2
+psycopg2-binary==2.9.10
 reportlab==4.5.1
 six==1.17.0
 sqlparse==0.5.5

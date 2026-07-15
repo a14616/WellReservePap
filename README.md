@@ -113,6 +113,45 @@ python manage.py runserver
 
 ---
 
+Deploy no Railway
+
+1. Criar um projeto novo no Railway e ligar o repositório GitHub.
+2. Adicionar um serviço PostgreSQL ao projeto.
+3. No serviço da aplicação, definir estas variáveis de ambiente:
+
+```bash
+DJANGO_SECRET_KEY=uma-chave-secreta-forte
+DJANGO_DEBUG=False
+DATABASE_URL=valor-fornecido-pelo-postgresql-do-railway
+DJANGO_ALLOWED_HOSTS=teu-dominio.railway.app
+CSRF_TRUSTED_ORIGINS=https://teu-dominio.railway.app
+EMAIL_HOST_USER=teu-email
+EMAIL_HOST_PASSWORD=tua-password-ou-app-password
+```
+
+4. Confirmar que o comando de arranque usa o Procfile, com Gunicorn ligado à porta do Railway.
+5. Depois do deploy, correr as migrações:
+
+```bash
+python manage.py migrate
+```
+
+6. Se necessário, gerar os ficheiros estáticos:
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+Notas importantes:
+
+* O projeto funciona com SQLite em desenvolvimento local.
+* Em Railway, usa PostgreSQL através de DATABASE_URL.
+* Os uploads em MEDIA_ROOT não são persistentes no Railway sem storage externo.
+
+---
+
+---
+
  Requisitos
 
 * Python 3.10 ou superior

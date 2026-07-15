@@ -3,51 +3,38 @@ Django settings for WellReserve project.
 """
 
 from pathlib import Path
-import shutil
 import os
+from urllib.parse import urlparse
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-def _get_vercel_sqlite_path() -> Path:
-    """Em Vercel, usa /tmp para permitir escrita no SQLite (se disponível), fallback para /var/tmp."""
-    source_db = BASE_DIR / 'db.sqlite3'
-    
-    # Tenta /tmp primeiro, depois /var/tmp como fallback
-    for tmp_dir in ['/tmp', '/var/tmp']:
-        target_db = Path(tmp_dir) / 'db.sqlite3'
-        try:
-            if source_db.exists() and not target_db.exists():
-                target_db.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy(source_db, target_db)
-            return target_db
-        except (OSError, PermissionError):
-            continue
-    
-    # Se ambos falharem, usa o diretório original
-    return source_db
-
-    return target_db
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-wellreserve-2026-secret-key-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get(
-    'DJANGO_DEBUG',
-    'False' if os.environ.get('VERCEL') else 'True',
-).lower() == 'true'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '.vercel.app',
-    '.vercel.sh',
 ]
 
-if os.environ.get('VERCEL_URL'):
-    ALLOWED_HOSTS.append(os.environ['VERCEL_URL'])
+def _normalize_host(value: str) -> str:
+    parsed = urlparse(value)
+    return parsed.hostname or value
+
+
+railway_host = os.environ.get('RAILWAY_STATIC_URL') or os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+if railway_host:
+    ALLOWED_HOSTS.append(_normalize_host(railway_host))
+
+extra_allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS')
+if extra_allowed_hosts:
+    ALLOWED_HOSTS.extend(_normalize_host(host.strip()) for host in extra_allowed_hosts.split(',') if host.strip())
 
 # Application definition
 INSTALLED_APPS = [
@@ -93,12 +80,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'WellReserve.wsgi.application'
 
 # Database
+database_url = os.environ.get('DATABASE_URL')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': _get_vercel_sqlite_path() if os.environ.get('VERCEL') else BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+if database_url:
+    DATABASES['default'] = dj_database_url.config(default=database_url, conn_max_age=600, ssl_require=True)
 
 # Custom User Model
 AUTH_USER_MODEL = 'app.Utilizador'
@@ -135,15 +126,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Email (Gmail)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'wellreservepap@gmail.com'
-EMAIL_HOST_PASSWORD = 'zcdhfbxqmqplbszl'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-CONTACTO_EMAIL_DESTINO = 'wellreservepap@gmail.com'
+# Email (SMTP)
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+CONTACTO_EMAIL_DESTINO = os.environ.get('CONTACTO_EMAIL_DESTINO', EMAIL_HOST_USER)
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -152,9 +143,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
     'https://*.vercel.app',
     'https://*.vercel.sh',
 ]
+
+extra_csrf_origins = os.environ.get('CSRF_TRUSTED_ORIGINS')
+if extra_csrf_origins:
+    CSRF_TRUSTED_ORIGINS.extend(origin.strip() for origin in extra_csrf_origins.split(',') if origin.strip())
 
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
