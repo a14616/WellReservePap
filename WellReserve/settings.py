@@ -21,6 +21,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    'testserver',
     '.railway.app',
     '.up.railway.app',
 ]
@@ -158,9 +159,8 @@ if extra_csrf_origins:
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    # Evita problemas de redirect em Vercel (proxy já faz HTTPS)
-    if not os.environ.get('VERCEL'):
-        SECURE_SSL_REDIRECT = True
+
+SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'False').lower() == 'true'
 
 # Logging para capturar erros em produção
 LOGGING = {

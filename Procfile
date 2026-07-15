@@ -1,1 +1,1 @@
-web: gunicorn WellReserve.wsgi:application --bind 0.0.0.0:$PORT
+web: bash -lc "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn WellReserve.wsgi:application --bind 0.0.0.0:$PORT"
