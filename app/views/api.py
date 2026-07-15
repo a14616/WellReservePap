@@ -97,6 +97,11 @@ self.addEventListener('fetch', event => {
 	return response
 
 
+def health_check(request):
+	"""Resposta mínima para verificar se o processo responde no Railway."""
+	return HttpResponse('ok', content_type='text/plain')
+
+
 def api_horarios_disponiveis(request):
 	"""API para obter horários disponíveis"""
 	servico_id = request.GET.get('servico')

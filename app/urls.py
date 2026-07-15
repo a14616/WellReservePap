@@ -14,6 +14,9 @@ urlpatterns = [
     path('registo/', views.registo, name='registo'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+
+    # Saúde da aplicação
+    path('healthz/', views.health_check, name='health_check'),
     
     # Dashboard
     path('dashboard/', views.dashboard, name='dashboard'),
