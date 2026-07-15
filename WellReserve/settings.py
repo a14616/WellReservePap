@@ -21,6 +21,8 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '.railway.app',
+    '.up.railway.app',
 ]
 
 def _normalize_host(value: str) -> str:
