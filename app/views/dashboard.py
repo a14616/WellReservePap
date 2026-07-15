@@ -1,4 +1,5 @@
 """Vistas públicas e do dashboard."""
+import logging
 from datetime import date
 
 from django.contrib import messages
@@ -11,6 +12,8 @@ from django.shortcuts import redirect, render
 from ..forms import ContactoForm, PerfilForm
 from ..content_assets import produto_assets, servico_assets
 from ..models import CategoriaServico, Contacto, Encomenda, Produto, Reserva, Servico, HorarioFuncionario, Utilizador
+
+logger = logging.getLogger(__name__)
 
 
 def _enrich_products(produtos):
@@ -31,9 +34,15 @@ def _enrich_services(servicos):
 
 def home(request):
 	"""Página inicial"""
-	servicos_destaque = _enrich_services(list(Servico.objects.filter(ativo=True, destaque=True)[:6]))
-	produtos_destaque = _enrich_products(list(Produto.objects.filter(ativo=True, destaque=True)[:6]))
-	categorias = CategoriaServico.objects.filter(ativo=True)
+	try:
+		servicos_destaque = _enrich_services(list(Servico.objects.filter(ativo=True, destaque=True)[:6]))
+		produtos_destaque = _enrich_products(list(Produto.objects.filter(ativo=True, destaque=True)[:6]))
+		categorias = CategoriaServico.objects.filter(ativo=True)
+	except Exception:
+		logger.exception("Erro ao carregar dados da home page")
+		servicos_destaque = []
+		produtos_destaque = []
+		categorias = []
 
 	context = {
 		'servicos_destaque': servicos_destaque,

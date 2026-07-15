@@ -2,6 +2,7 @@
 import json
 from datetime import datetime, timedelta
 
+from django.db import connection
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 
@@ -98,8 +99,27 @@ self.addEventListener('fetch', event => {
 
 
 def health_check(request):
-	"""Resposta mínima para verificar se o processo responde no Railway."""
-	return HttpResponse('ok', content_type='text/plain')
+	"""Healthcheck com validação opcional de base de dados para Railway."""
+	db_ok = True
+	db_error = None
+
+	try:
+		with connection.cursor() as cursor:
+			cursor.execute("SELECT 1")
+			cursor.fetchone()
+	except Exception as exc:
+		db_ok = False
+		db_error = str(exc)
+
+	payload = {
+		'status': 'ok' if db_ok else 'degraded',
+		'database': 'ok' if db_ok else 'error',
+	}
+
+	if db_error:
+		payload['error'] = db_error
+
+	return JsonResponse(payload, status=200 if db_ok else 503)
 
 
 def api_horarios_disponiveis(request):
