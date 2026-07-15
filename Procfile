@@ -1,1 +1,1 @@
-web: bash -lc "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && gunicorn WellReserve.wsgi:application --bind 0.0.0.0:$PORT"
+web: /app/.venv/bin/python manage.py migrate --noinput && /app/.venv/bin/python manage.py collectstatic --noinput && gunicorn WellReserve.wsgi:application --bind 0.0.0.0:$PORT
