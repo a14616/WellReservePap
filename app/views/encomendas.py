@@ -383,11 +383,21 @@ def finalizar_encomenda(request):
 			_garantir_numero_fatura(encomenda)
 			request.session['carrinho'] = {}
 
-			email_confirmacao_enviado = enviar_email_confirmacao_encomenda(encomenda)
+			email_confirmacao_enviado = False
 			email_fatura_enviado = False
 
+			try:
+				email_confirmacao_enviado = enviar_email_confirmacao_encomenda(encomenda)
+			except Exception:
+				logger.exception('Falha inesperada ao enviar email de confirmação da encomenda #%s', encomenda.pk)
+				email_confirmacao_enviado = False
+
 			if pagamento_simulado:
-				email_fatura_enviado = enviar_email_fatura_encomenda(encomenda)
+				try:
+					email_fatura_enviado = enviar_email_fatura_encomenda(encomenda)
+				except Exception:
+					logger.exception('Falha inesperada ao enviar fatura por email da encomenda #%s', encomenda.pk)
+					email_fatura_enviado = False
 
 			if pagamento_simulado:
 				if email_confirmacao_enviado and email_fatura_enviado:
