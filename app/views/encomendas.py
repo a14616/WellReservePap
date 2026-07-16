@@ -248,7 +248,11 @@ def _gerar_pdf_fatura_bytes(encomenda):
 def enviar_email_fatura_encomenda(encomenda):
 	"""Enviar email com a fatura da encomenda."""
 	try:
-		destinatario = encomenda.cliente.email or encomenda.faturacao_email
+		destinatario = (encomenda.cliente.email or encomenda.faturacao_email or '').strip()
+		if not destinatario:
+			logger.warning('Encomenda #%s sem email de destinatário para envio de fatura.', encomenda.pk)
+			return False
+
 		contexto = _contexto_fatura_encomenda(encomenda)
 
 		html_message = render_to_string('emails/encomenda_fatura.html', contexto)
@@ -274,7 +278,11 @@ def enviar_email_fatura_encomenda(encomenda):
 def enviar_email_confirmacao_encomenda(encomenda):
 	"""Enviar email ao utilizador quando a encomenda é confirmada"""
 	try:
-		destinatario = encomenda.cliente.email or encomenda.faturacao_email
+		destinatario = (encomenda.cliente.email or encomenda.faturacao_email or '').strip()
+		if not destinatario:
+			logger.warning('Encomenda #%s sem email de destinatário para envio de confirmação.', encomenda.pk)
+			return False
+
 		contexto = {
 			'encomenda': encomenda,
 			'cliente': encomenda.cliente,
@@ -303,7 +311,11 @@ def enviar_email_confirmacao_encomenda(encomenda):
 def enviar_email_alteracao_estado_encomenda(encomenda, estado_antigo, estado_novo):
 	"""Enviar email ao utilizador quando o estado da encomenda muda"""
 	try:
-		destinatario = encomenda.cliente.email or encomenda.faturacao_email
+		destinatario = (encomenda.cliente.email or encomenda.faturacao_email or '').strip()
+		if not destinatario:
+			logger.warning('Encomenda #%s sem email de destinatário para alteração de estado.', encomenda.pk)
+			return False
+
 		contexto = {
 			'encomenda': encomenda,
 			'cliente': encomenda.cliente,
